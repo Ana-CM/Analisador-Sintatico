@@ -1,0 +1,90 @@
+grammar LANG
+
+    Prog        <- Spacing Definition* Func+ EndOfFile
+    Definition  <- Data Type LBrace Declaration+ RBrace
+    Declaration <- Identifier ColonColon Type Semi
+    Func        <- Identifier LPar Params? RPar  ( Colon Type ( Comma Type)* )? LBrace Cmd* RBrace 
+    Params      <- Identifier ColonColon Type (Comma Identifier ColonColon Type)*
+    Type        <- Btype (LBrack RBrack)*
+
+    Cmd <- LBrace Cmd+ RBrace 
+        / If LPar Exp RPar Cmd (Else Cmd)? 
+        / Iterate LPar Exp RPar Cmd 
+        / Read LValue Semi 
+        / Print Exp Semi 
+        / Return Exp ( Comma Exp )* Semi 
+        / LValue Eq Exp Semi 
+        / Identifier LPar Exps* RPar ( Lt LValue ( Comma LValue )* Gt )? Semi 
+    
+    Exp  <- Rexp (And Rexp)*
+    Rexp <- Aexp Lt Aexp / Aexp ((Eqeq / Ne) Aexp)*
+    Aexp <- Mexp ((Plus / Minus) Mexp)*
+    Mexp <- Sexp ((Times / Div / Mod) Sexp)*
+
+    Sexp <- Not Sexp 
+        / Minus Sexp 
+        / Logic 
+        / Null 
+        / Decimal 
+        / Integer 
+        / LiteralCharacter 
+        / Pexp
+
+    Pexp <- New Type ( LBrack Exp RBrack )? 
+        / Identifier LPar Exps? RPar LBrack Exp RBrack 
+        / LValue 
+        / LPar Exp RPar  
+
+    LValue <- Identifier (LBrack Exp RBrack / Dot Identifier)*
+    Exps   <- Exp ( Comma Exp )*
+    
+    
+    # Lexico
+    Identifier       <- [a-z] ([a-z] / [0-9] / "_" / [A-Z])* Spacing
+    UserType         <- [A-Z] ([a-z] / [0-9] / "_" / [A-Z])* Spacing
+    Btype            <- "Int" Spacing / "Char" Spacing / "Bool" Spacing / "Float" Spacing / UserType
+    LiteralCharacter <- "'" (.)  "'" / "'" "\\n" "'" / "'" "\\r" "'" / "'" "\\t" "'" / "'" "\\b" "'" / "'" "\\\\" "'"
+    Integer          <- [0-9]+ Spacing
+    Decimal          <- [0-9]* Dot [0-9]+ Spacing
+
+    Null    <- "null" Spacing
+    Return  <- "return" Spacing 
+    New     <- "new" Spacing       
+    If      <- "if" Spacing            
+    Else    <- "else" Spacing  
+    Iterate <- "iterate" Spacing  
+    Print   <- "print" Spacing   
+    Read    <- "read" Spacing  
+    Data    <- "data" Spacing
+    
+    ColonColon <- "::" Spacing               
+    Colon      <- ":" Spacing       
+    LPar       <- "(" Spacing               
+    RPar       <- ")" Spacing               
+    LBrack     <- "[" Spacing                
+    RBrack     <- "]" Spacing                
+    LBrace     <- "{" Spacing                
+    RBrace     <- "}" Spacing                
+    Gt         <- ">" Spacing                
+    Lt         <- "<" Spacing                
+    Semi       <- ";" Spacing               
+    Dot        <- "." Spacing              
+    Comma      <- "," Spacing               
+    Eq         <- "=" Spacing                 
+    Eqeq       <- "==" Spacing              
+    Ne         <- "!=" Spacing               
+    Plus       <- "+" Spacing                 
+    Minus      <- "-" Spacing                
+    Times      <- "*" Spacing                
+    Div        <- "/" Spacing                
+    Mod        <- "%" Spacing                
+    And        <- "&&" Spacing               
+    Not        <- "!"  Spacing
+
+    Spacing   <- ( Space / Comment )*
+    Logic     <- "true" Spacing / "false" Spacing
+    Comment   <- "--" (!EndOfLine .)* EndOfLine / "{-" (!"-}" .)* "-}" 
+    Space     <- " " / "\t" / EndOfLine
+    EndOfLine <- "\r\n" / "\n" / "\r" 
+    EndOfFile <- !.
+

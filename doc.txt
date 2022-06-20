@@ -1,0 +1,84 @@
+   { *
+    [ +
+
+
+
+prog → {data} {func}
+
+data → data ID ‘{’ {decl} ‘}’
+decl → ID ‘::’ type ‘;’
+
+
+func → ID ‘(’ [params] ‘)’ [‘:’ type (‘,’ type)*] ‘{’ {cmd} ‘}’
+
+
+params → ID ‘::’ type {‘,’ ID ‘::’ type}
+type → type ‘[’ ‘]’
+| btype
+
+
+btype → Int
+| Char
+| Bool
+| Float
+| ID
+
+
+cmd → ‘{’ {cmd} ‘}’
+| if ‘(’ exp ‘)’ cmd
+
+| if ‘(’ exp ‘)’ cmd else cmd
+| iterate ‘(’ exp ‘)’ cmd
+| read lvalue ‘;’
+| print exp ‘;’
+| return exp {‘,’ exp} ‘;’
+| lvalue = exp ‘;’
+| ID ‘(’ [exps] ‘)’ [‘<’ lvalue {‘,’ lvalue} ‘>’] ‘;’
+
+
+
+
+exp → exp && exp
+| rexp
+rexp → aexp < aexp
+| rexp == aexp
+| rexp != aexp
+| aexp
+aexp → aexp + mexp
+| aexp - mexp
+| mexp
+mexp → mexp * sexp
+| mexp / sexp
+| mexp % sexp
+| sexp
+sexp → ! sexp
+| - sexp
+| true
+| false
+| null
+| INT
+| FLOAT
+| CHAR
+| pexp
+pexp → lvalue
+| ‘(’ exp ‘)’
+| new type [ ‘[’ exp ‘]’ ]
+| ID ‘(’ [exps] ‘)’ ‘[’ exp ‘]’
+lvalue → ID
+| lvalue ‘[’ exp ‘]’
+| lvalue . ID
+exps → exp { , exp }
+
+
+data Ponto {
+   x :: Float;
+   y :: Float;
+}
+
+main(l :: Int){
+   p = new Ponto;
+   z = new Int[][2*l];
+   z[0] = new Int[10];
+   wrong = new Int;
+   print p.x;
+}
