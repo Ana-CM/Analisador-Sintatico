@@ -1,7 +1,11 @@
-package lang;
+/**
+ * Ana Carolina Mendes Lino -  201865212AC 
+ * Thiago Silva Miranda - 201865553C
+ */
+package lang.parser;
 
 import java.io.*;
-import lang.ParseAdaptor;
+import lang.parser.ParseAdaptor;
 import java.util.List;
 
 // Adaptador para classe de parser. a Função parseFile deve retornar null caso o parser resulte em erro. 

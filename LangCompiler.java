@@ -1,8 +1,12 @@
+/**
+ * Ana Carolina Mendes Lino -  201865212AC 
+ * Thiago Silva Miranda - 201865553C
+ */
 import java.io.*;
-import lang.ParseAdaptor;
+import lang.parser.ParseAdaptor;
 import lang.TreeNode;
-import lang.Parser;
-import lang.TestParser;
+import lang.parser.Parser;
+import lang.parser.TestParser;
 
 public class LangCompiler{
    // Recupera o nome base (sem extensão) de um arquivo.

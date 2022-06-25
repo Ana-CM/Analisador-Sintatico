@@ -1,6 +1,11 @@
-package lang;
+/**
+ * Ana Carolina Mendes Lino -  201865212AC 
+ * Thiago Silva Miranda - 201865553C
+ */
 
-import lang.ParseAdaptor;
+package lang.parser;
+
+import lang.parser.ParseAdaptor;
 import lang.LANG;
 import lang.TreeNode;
 import lang.ParseError;

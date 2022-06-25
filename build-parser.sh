@@ -1,3 +1,3 @@
 canopy lang.peg --lang java
-javac LangCompiler.java ./lang/*.java
+javac LangCompiler.java ./lang/*.java ./lang/parser/*.java
 java LangCompiler -bs
