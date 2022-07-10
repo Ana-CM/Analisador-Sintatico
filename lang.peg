@@ -2,52 +2,72 @@
 # Thiago Silva Miranda - 201865553C
  grammar LANG
 
-    Prog        <- Spacing Definition* Func+ EndOfFile
-    Definition  <- Data Type LBrace Declaration+ RBrace
-    Declaration <- Identifier ColonColon Type Semi
-    Func        <- Identifier LPar Params? RPar  ( Colon Type ( Comma Type)* )? LBrace Cmd* RBrace 
-    Params      <- Identifier ColonColon Type (Comma Identifier ColonColon Type)*
-    Type        <- Btype (LBrack RBrack)*
+    Prog        <- Spacing (Definition*) (Func+) EndOfFile %MakeProg
+    Definition  <- Data Type LBrace (Declaration+) RBrace %MakeDefinition
+    Declaration <- Identifier ColonColon Type Semi %MakeDecl
+    Func        <- Identifier LPar Params? RPar  ( Colon Type ( Comma Type)* )? LBrace (Cmd*) RBrace %MakeFunc
+    Params      <- Identifier ColonColon Type (Comma Identifier ColonColon Type)* %MakeParams
+    Type        <- Btype (LBrack RBrack)* %MakeType
+    Btype       <- TyInt %MakeInt
+                / TyChar %MakeTyChar
+                / TyBool %MakeTyBool
+                / TyFloat %MakeTyFloat
+                / UserType %MakeUserType
 
-    Cmd <- LBrace Cmd+ RBrace 
-        / If LPar Exp RPar Cmd (Else Cmd)? 
-        / Iterate LPar Exp RPar Cmd 
-        / Read LValue Semi 
-        / Print Exp Semi 
-        / Return Exp ( Comma Exp )* Semi 
-        / LValue Eq Exp Semi 
-        / Identifier LPar Exps* RPar ( Lt LValue ( Comma LValue )* Gt )? Semi 
+    Cmd <- LBrace (Cmd+) RBrace %MakeCmdBrace
+        / If LPar Exp RPar Cmd (Else Cmd)? %MakeIf
+        / Iterate LPar Exp RPar Cmd % MakeIterate
+        / Read LValue Semi %MakeRead
+        / Print Exp Semi %MakePrint
+        / Return Exp ( Comma Exp )* Semi %MakeReturn
+        / LValue Eq Exp Semi %MakeAttr
+        / Identifier LPar Exps? RPar ( Lt LValue ( Comma LValue )* Gt )? Semi %MakeCallAttr
+
+    Exp  <- Rexp And Exp / Rexp
+    Exp  <- Rexp ((And Rexp)*)
+
+    Rexp <- Aexp Lt Aexp 
+        / Aexp ((Eqeq / Ne) Aexp)*
+
+    Rexp <- Aexp Lt Aexp 
+        / Aexp (Eqeq / Ne) Rexp
+
+        
+    Aexp <- Mexp ((Plus / Minus) Mexp)* %MakeMexp
+
     
-    Exp  <- Rexp (And Rexp)*
-    Rexp <- Aexp Lt Aexp / Aexp ((Eqeq / Ne) Aexp)*
-    Aexp <- Mexp ((Plus / Minus) Mexp)*
     Mexp <- Sexp ((Times / Div / Mod) Sexp)*
 
-    Sexp <- Not Sexp 
-        / Minus Sexp 
-        / Logic 
-        / Null 
-        / Decimal 
-        / Integer 
-        / LiteralCharacter 
+    Sexp <- Not Sexp %Not
+        / Minus Sexp %MakeNegative
+        / True %MakeTrue
+        / False %MakeFalse
+        / Null %MakeNull
+        / Decimal %MakeDecimal
+        / Integer %MakeInteger
+        / LiteralCharacter %MakeLiteralCharacter
         / Pexp
 
-    Pexp <- New Type ( LBrack Exp RBrack )? 
-        / Identifier LPar Exps? RPar LBrack Exp RBrack 
+            
+    Pexp <- New Type ( LBrack Exp RBrack )? %MakeNew
+        / Identifier LPar Exps? RPar LBrack Exp RBrack %MakeCallBrack
         / LValue 
-        / LPar Exp RPar  
+        / LPar Exp RPar %MakeParExp
 
-    LValue <- Identifier (LBrack Exp RBrack / Dot Identifier)*
+    LValue <- Identifier (LBrack Exp RBrack / Dot Identifier)* %MakeLValue
     Exps   <- Exp ( Comma Exp )*
-    
     
     # Lexico
     Identifier       <- [a-z] ([a-z] / [0-9] / "_" / [A-Z])* Spacing
     UserType         <- [A-Z] ([a-z] / [0-9] / "_" / [A-Z])* Spacing
-    Btype            <- "Int" Spacing / "Char" Spacing / "Bool" Spacing / "Float" Spacing / UserType
     LiteralCharacter <- "'" (.)  "'" / "'" "\\n" "'" / "'" "\\r" "'" / "'" "\\t" "'" / "'" "\\b" "'" / "'" "\\\\" "'"
     Integer          <- [0-9]+ Spacing
     Decimal          <- [0-9]* Dot [0-9]+ Spacing
+
+    TyInt   <- "Int" Spacing
+    TyChar  <- "Char" Spacing
+    TyBool  <- "Bool" Spacing
+    TyFloat <- "Float" Spacing
 
     Null    <- "null" Spacing
     Return  <- "return" Spacing 
@@ -84,7 +104,8 @@
     Not        <- "!"  Spacing
 
     Spacing   <- ( Space / Comment )*
-    Logic     <- "true" Spacing / "false" Spacing
+    True     <- "true" Spacing
+    False     <- "false" Spacing
     Comment   <- "--" (!EndOfLine .)* EndOfLine / "{-" (!"-}" .)* "-}" 
     Space     <- " " / "\t" / EndOfLine
     EndOfLine <- "\r\n" / "\n" / "\r" 

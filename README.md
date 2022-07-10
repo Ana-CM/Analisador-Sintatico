@@ -7,7 +7,7 @@ Os fontes foram desenvolvidos na versão do java 11.0.15, sendo assim é recomen
 
 ## Execução
 
-No projeto existem dois arquivos de build, um que permite somente a execução do programa e outro que permite a re-compilação do programa gerando assim novamente os arquivos pelo Canopy.
+No projeto existem dois arquivos de build, um que permite somente a execução do programa e outro que permite a recompilação do programa gerando assim novamente os arquivos pelo Canopy.
 
 Caso queira somente executar o programa,  sem gerar, basta executar o comando:
 
@@ -15,7 +15,7 @@ Caso queira somente executar o programa,  sem gerar, basta executar o comando:
 bash build-parser-no-canopy.sh
 ```
 
-Mas caso queria gerar novamente os arquivos,  é necessário instalar o Canopy na sua máquina utilizando os seguintes comando:
+Mas caso queira gerar novamente os arquivos,  é necessário instalar o Canopy na sua máquina utilizando os seguintes comando:
 
 ```
 sudo apt update
