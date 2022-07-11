@@ -3,7 +3,7 @@ data Ponto {
    y :: Float;
 }
 
-f(d :: Int ) : Int, Char{
+f(deste :: Int ) : Int, Char{
     return 0, '\n';
 }
 

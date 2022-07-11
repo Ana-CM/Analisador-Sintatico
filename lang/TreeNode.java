@@ -398,21 +398,21 @@ class TreeNode42 extends TreeNode {
 class TreeNode43 extends TreeNode {
     TreeNode43(String text, int offset, List<TreeNode> elements) {
         super(text, offset, elements);
-        labelled.put(Label.Spacing, elements.get(2));
+        labelled.put(Label.Spacing, elements.get(1));
     }
 }
 
 class TreeNode44 extends TreeNode {
     TreeNode44(String text, int offset, List<TreeNode> elements) {
         super(text, offset, elements);
-        labelled.put(Label.Spacing, elements.get(2));
+        labelled.put(Label.Spacing, elements.get(1));
     }
 }
 
 class TreeNode45 extends TreeNode {
     TreeNode45(String text, int offset, List<TreeNode> elements) {
         super(text, offset, elements);
-        labelled.put(Label.Spacing, elements.get(1));
+        labelled.put(Label.Spacing, elements.get(3));
     }
 }
 
@@ -433,7 +433,7 @@ class TreeNode47 extends TreeNode {
 class TreeNode48 extends TreeNode {
     TreeNode48(String text, int offset, List<TreeNode> elements) {
         super(text, offset, elements);
-        labelled.put(Label.Spacing, elements.get(1));
+        labelled.put(Label.Dot, elements.get(1));
     }
 }
 
@@ -447,8 +447,7 @@ class TreeNode49 extends TreeNode {
 class TreeNode50 extends TreeNode {
     TreeNode50(String text, int offset, List<TreeNode> elements) {
         super(text, offset, elements);
-        labelled.put(Label.Dot, elements.get(1));
-        labelled.put(Label.Spacing, elements.get(3));
+        labelled.put(Label.Spacing, elements.get(1));
     }
 }
 
@@ -692,6 +691,20 @@ class TreeNode84 extends TreeNode {
 
 class TreeNode85 extends TreeNode {
     TreeNode85(String text, int offset, List<TreeNode> elements) {
+        super(text, offset, elements);
+        labelled.put(Label.Spacing, elements.get(1));
+    }
+}
+
+class TreeNode86 extends TreeNode {
+    TreeNode86(String text, int offset, List<TreeNode> elements) {
+        super(text, offset, elements);
+        labelled.put(Label.Spacing, elements.get(1));
+    }
+}
+
+class TreeNode87 extends TreeNode {
+    TreeNode87(String text, int offset, List<TreeNode> elements) {
         super(text, offset, elements);
         labelled.put(Label.EndOfLine, elements.get(2));
     }

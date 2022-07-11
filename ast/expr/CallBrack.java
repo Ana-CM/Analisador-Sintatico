@@ -4,7 +4,7 @@ package ast.expr;
  * Esta classe representa uma chamada de função.
  * Identifier LPar Exps? RPar LBrack Exp RBrack 
  */
-public class CallBrack {
+public class CallBrack extends Expr{
         
     private String id;
     private Expr[] params;

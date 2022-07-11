@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.lang.model.element.ElementKind;
+
 import lang.Actions;
 import lang.Label;
 import lang.LANG;
@@ -28,21 +30,18 @@ public class AstActions implements Actions {
         
         List<Object> idx = null;
         
-        if (elements.size() > 1) {
-            idx = new ArrayList <Object>();
 
-            for (int i = 1; i < elements.size(); i++) {
-                for (TreeNode e : elements.get(i)) {
-                    if (e.get(Label.Exp) != null) {
-                        Expr exp = (Expr) e.get(Label.Exp);
-                        idx.add(exp);
-                    }
-                    
-                    else if (e.get(Label.Identifier) != null) {
-                        String id = (String) e.get(Label.Identifier).elements.get(0).text;
-                        idx.add(id);
-                    }
-                }
+        idx = new ArrayList <Object>();
+
+        for (TreeNode e : elements.get(1)) {
+            if (e.get(Label.Exp) != null) {
+                Expr exp = (Expr) e.get(Label.Exp);
+                idx.add(exp);
+            }
+            
+            else if (e.get(Label.Identifier) != null) {
+                String id = (String) e.get(Label.Identifier).elements.get(0).text;
+                idx.add(id);
             }
         }
         
@@ -60,25 +59,24 @@ public class AstActions implements Actions {
 
     /**
      * Identifier LPar Exps? RPar LBrack Exp RBrack 
+     * Exp ( Comma Exp )*
      */
     public CallBrack MakeCallBrack(String input, int start, int end, List<TreeNode> elements) {
         String id = elements.get(0).text;
         Expr[] params = null;
-        Expr exp = null;
+        Expr exp = (Expr)elements.get(5);
 
-        if(elements.size() == 6){
-            exp = (Expr)elements.get(4);
-        } else if(elements.size() == 7){
-            params = new Expr[elements.get(2).elements.size()];
+        if (elements.get(2).elements.size() > 0) {
+            params = new Expr[1 + elements.get(2).elements.get(1).elements.size()];
             for(int i = 0; i < params.length; i++){
                 if ( i == 0 ) {
                     params[i] = (Expr)elements.get(2).elements.get(i);
                 } else {
-                    params[i] = (Expr)elements.get(2).elements.get(i).get(Label.Exp);
+                    params[i] = (Expr)elements.get(2).elements.get(1).elements.get(i).get(Label.Exp);
                 }
             }
-            exp = (Expr)elements.get(elements.size() - 1);
-        } 
+        }
+
         return new CallBrack(id, params, exp);
     }
 
@@ -88,33 +86,33 @@ public class AstActions implements Actions {
     public New MakeNew(String input, int start, int end, List<TreeNode> elements) {
         Type type = (Type) elements.get(1);
         Expr exp = null;
-        if(elements.size() > 2){
-            exp = (Expr) elements.get(3);
+        if(elements.get(2).elements.size() > 1){
+            exp = (Expr) elements.get(2).get(Label.Exp);
         }
         return new New(type, exp);
     }
 
     /**
-     * LiteralCharacter
+     * "'" ("\\n" / "\\r" / "\\t" / "\\b" /  "\\\\" / (.) ) "'" Spacing 
      */
     public LiteralCharacter MakeLiteralCharacter(String input, int start, int end, List<TreeNode> elements) {
-        char literalCharacter = (char)elements.get(0).elements.get(0).text.charAt(1);
+        char literalCharacter = (char)elements.get(1).text.charAt(0);
         return new LiteralCharacter(literalCharacter);
     }
     
     /**
-     * Integer
+     * [0-9]+ Spacing
      */
     public NumberInteger MakeInteger (String input, int start, int end, List<TreeNode> elements) {
-        int integer = Integer.parseInt(elements.get(0).elements.get(0).text);
+        int integer = Integer.parseInt(elements.get(0).text);
         return new NumberInteger(integer);
     }
 
     /**
-     * Decimal
+     * ([0-9]* Dot [0-9]+) Spacing
      */
     public NumberDecimal MakeDecimal (String input, int start, int end, List<TreeNode> elements) {
-        float decimal = Float.parseFloat(elements.get(0).elements.get(0).text);
+        float decimal = Float.parseFloat(elements.get(0).text);
         return new NumberDecimal(decimal);
     }
 
@@ -164,36 +162,28 @@ public class AstActions implements Actions {
         Expr[] params = null;
         LValue[] lvalues = null;
 
-        if ( null != elements.get(2).get(Label.Exp) ) {
-            params = new Expr[elements.get(2).elements.size()];
+        if (elements.get(2).elements.size() > 0) {
+            params = new Expr[1 + elements.get(2).elements.get(1).elements.size()];
             for(int i = 0; i < params.length; i++){
                 if ( i == 0 ) {
                     params[i] = (Expr)elements.get(2).elements.get(i);
                 } else {
-                    params[i] = (Expr)elements.get(2).elements.get(i).get(Label.Exp);
-                }
-            }
-
-            if ( null !=  elements.get(4).get(Label.LValue) ) {
-                lvalues = new LValue[elements.get(4).elements.size()];
-                for(int i = 1; i < lvalues.length - 1; i++){
-                    if ( i == 1 ) {
-                        lvalues[i] = (LValue)elements.get(4).elements.get(i);
-                    } else {
-                        lvalues[i] = (LValue)elements.get(4).elements.get(i).get(Label.LValue);
-                    }
-                }
-            }
-        } else if ( null !=  elements.get(3).get(Label.LValue) ) {
-            lvalues = new LValue[elements.get(3).elements.size()];
-            for(int i = 1; i < lvalues.length - 1; i++){
-                if ( i == 1 ) {
-                    lvalues[i] = (LValue)elements.get(3).elements.get(i);
-                } else {
-                    lvalues[i] = (LValue)elements.get(3).elements.get(i).get(Label.LValue);
+                    params[i] = (Expr)elements.get(2).elements.get(1).elements.get(i).get(Label.Exp);
                 }
             }
         }
+
+        if ( null !=  elements.get(4).get(Label.LValue) ) {
+            lvalues = new LValue[1 + elements.get(4).elements.get(2).elements.size()];
+            lvalues[0] = (LValue)elements.get(4).get(Label.LValue);
+            int i = 1;
+
+            for(TreeNode e: elements.get(4).elements.get(2).elements) {
+                lvalues[i] = (LValue)e.get(Label.LValue);
+                i++;
+            }
+        }
+
     
         return new CallAttr(id, params, lvalues);
     }
@@ -213,13 +203,14 @@ public class AstActions implements Actions {
     public Return MakeReturn (String input, int start, int end, List<TreeNode> elements) {
         Expr[] exp = null;
         
-        exp = new Expr[elements.size() - 2];
-        for(int i = 1; i < exp.length - 1; i++){
-            if ( i == 1 ) {
-                exp[i] = (Expr)elements.get(i);
-            } else {
-                exp[i] = (Expr)elements.get(i).get(Label.Exp);
-            }
+        exp = new Expr[1 + elements.get(2).elements.size()];
+
+        exp[0] = (Expr)elements.get(1);
+        int i = 1;
+
+        for(TreeNode e: elements.get(2)){
+            exp[i] = (Expr)e.get(Label.Exp);
+            i++;
         }
 
         return new Return(exp);
@@ -264,7 +255,7 @@ public class AstActions implements Actions {
     }
     
     /**
-     * UserType
+     * ([A-Z] ([a-z] / [0-9] / "_" / [A-Z])*) Spacing
      */
     public UserType MakeUserType (String input, int start, int end, List<TreeNode> elements) {
         return new UserType(elements.get(0).text);
@@ -303,7 +294,7 @@ public class AstActions implements Actions {
      */
     public Type MakeType (String input, int start, int end, List<TreeNode> elements) {
         BType btype = (BType) elements.get(0);
-        int dim = elements.size() - 1;
+        int dim = elements.get(1).elements.size();
         
         return new Type(btype, dim);
     }
@@ -320,20 +311,20 @@ public class AstActions implements Actions {
         Entry<String, Type> pair = Map.entry(id, type);
         p.add(pair);
 
-        if (elements.size() > 3) {
-            for (int i = 3; i < elements.size(); i++) {
-                id = elements.get(i).get(Label.Identifier).elements.get(0).text;
-                type = (Type) elements.get(i).get(Label.Type);
-                pair = Map.entry(id, type);
-                p.add(pair);
-            }
+        
+        for (TreeNode e : elements.get(3)) {
+            id = e.get(Label.Identifier).elements.get(0).text;
+            type = (Type) e.get(Label.Type);
+            pair = Map.entry(id, type);
+            p.add(pair);
         }
+        
     
         return new Params(p);
     }
 
     /**
-     * Identifier LPar Params? RPar  ( Colon Type ( Comma Type)* )? LBrace (Cmd*) RBrace
+     * Identifier LPar Params? RPar  ( Colon Type ( Comma Type)* )? LBrace Cmd* RBrace
      *  Params      <- Identifier ColonColon Type (Comma Identifier ColonColon Type)*
      */
     public Func MakeFunc (String input, int start, int end, List<TreeNode> elements) {
@@ -342,44 +333,22 @@ public class AstActions implements Actions {
         Type[] type = null;
         Cmd[] cmd = null;
 
-        if ( null != elements.get(2).get(Label.ColonColon) ) {
-            params = (Params) elements.get(2);
-        }
+        params = (Params) elements.get(2);
 
         if ( null != elements.get(4).get(Label.Type) ) {
-            type = new Type[elements.get(4).elements.size() - 1];
-            for(int i = 1; i < type.length; i++){
-                if ( i == 1 ) {
-                    type[i] = (Type)elements.get(4).elements.get(i);
-                } else {
-                    type[i] = (Type)elements.get(4).elements.get(i).get(Label.Type);
-                }
-            }
-        } else if ( null != elements.get(3).get(Label.Type) ) {
-            type = new Type[elements.get(3).elements.size() - 1];
-            for(int i = 1; i < type.length; i++){
-                if ( i == 1 ) {
-                    type[i] = (Type)elements.get(4).elements.get(i);
-                } else {
-                    type[i] = (Type)elements.get(4).elements.get(i).get(Label.Type);
-                }
-            }
-        }
+            type = new Type[1 + elements.get(4).elements.get(2).elements.size()];
+            type[0] = (Type)elements.get(4).get(Label.Type);
+            int i = 1;
 
-        int cmdId = 0;
-        if ( null != elements.get(6).get(Label.Cmd) ) {
-            cmdId = 6;
-        } else if ( null != elements.get(5).get(Label.Cmd) ) {
-            cmdId = 5;  
-        } else if ( null != elements.get(4).get(Label.Cmd) ) {
-            cmdId = 4;
-        }
-
-        if (cmdId != 0) {
-            cmd = new Cmd[elements.get(cmdId).elements.size()];
-            for (int i = 0; i < cmd.length; i++ ) {
-                cmd[i] = (Cmd) elements.get(cmdId).elements.get(i);
+            for(TreeNode e: elements.get(4).elements.get(2).elements) {
+                type[i] = (Type)e.get(Label.Type);
+                i++;
             }
+        } 
+        cmd = new Cmd[elements.get(6).elements.size()];
+        for (int i = 0; i < cmd.length; i++ ) {
+            cmd[i] = (Cmd) elements.get(6).elements.get(i);
+
         }
 
         return new Func(id, params, type, cmd);
@@ -395,7 +364,7 @@ public class AstActions implements Actions {
     }
 
     /**
-     * Data Type LBrace (Declaration+) RBrace
+     * Data Type LBrace Declaration+ RBrace
      */
     public Definition MakeDefinition (String input, int start, int end, List<TreeNode> elements) {
         Type type = (Type) elements.get(1);
@@ -409,7 +378,7 @@ public class AstActions implements Actions {
     } 
 
     /**
-     * Spacing (Definition*) (Func+) EndOfFile
+     * Spacing Definition* Func+ EndOfFile
      */
     public Prog MakeProg (String input, int start, int end, List<TreeNode> elements) {
         Definition[] defs = null;
@@ -420,20 +389,14 @@ public class AstActions implements Actions {
             for (int i = 0; i < defs.length; i++) {
                 defs[i] = (Definition) elements.get(1).elements.get(i);
             }
-
-            if ( null != elements.get(2).get(Label.Func) ) {
-                funcs = new Func[elements.get(2).elements.size()];
-                for (int i = 0; i < funcs.length; i++) {
-                    funcs[i] = (Func) elements.get(2).elements.get(i);
-                }
-            }
-        } else if ( null != elements.get(1).get(Label.Func) ) {
-            funcs = new Func[elements.get(1).elements.size()];
-            for (int i = 0; i < funcs.length; i++) {
-                funcs[i] = (Func) elements.get(1).elements.get(i);
-            }
         }
 
+        funcs = new Func[elements.get(2).elements.size()];
+        for (int i = 0; i < funcs.length; i++) {
+            funcs[i] = (Func) elements.get(2).elements.get(i);
+        }
+
+        
         return new Prog(defs, funcs);
     }
 
@@ -449,52 +412,104 @@ public class AstActions implements Actions {
     }
 
     /**
-     * Minus
+     * Mexp <- Sexp ((Times / Div / Mod) Sexp)*
      */
-    public Minus MakeMinus (String input, int start, int end, List<TreeNode> elements) {
-        Expr left = (Expr)elements.get(0);
-        Expr right = (Expr)elements.get(1);
-        return new Minus(left, right);
+    public Expr MakeMexp (String input, int start, int end, List<TreeNode> elements) {
+        Expr l = (Expr) elements.get(0);
+        Expr r = null;
+        
+        if (null == elements.get(1))
+            return (Expr) l;
+ 
+        for (TreeNode e : elements.get(1)) {
+            r = (Expr) e.get(Label.Sexp);
+
+            if (null != e.elements.get(0).get(Label.Times))
+                l = (Expr) (new Times(l, r));
+
+            else if (null != e.elements.get(0).get(Label.Div))
+                l = (Expr) (new Div(l, r));
+
+            else if (null != e.elements.get(0).get(Label.Mod))
+                l = (Expr) (new Mod(l, r));
+        }
+
+        return l;
     }
 
     /**
      * Mexp ((Plus / Minus) Mexp)*
      */
-    public BinOP MakeMexp (String input, int start, int end, List<TreeNode> elements) {
-        Expr exp = (Expr)elements.get(0);
-        Expr last_exp = null;
-        Expr l = null;
+    public Expr MakeAexp (String input, int start, int end, List<TreeNode> elements) {
+        Expr l = (Expr) elements.get(0);
         Expr r = null;
-        Plus p = null;
-        Minus m = null;
+        
+        if (null == elements.get(1))
+            return (Expr) l;
+ 
+        for (TreeNode e : elements.get(1)) {
+            r = (Expr) e.get(Label.Sexp);
 
-        for (int i = 1; i < elements.size(); i++) {
-            
-            if ( null != elements.get(i).get(Label.Plus)) {
-                
-                if (i == 1) {
-                    l = exp;
-                } else {
-                    l = last_exp;
-                }
-                r = (Expr) elements.get(i).get(Label.Mexp);
-                p = new Plus(l, r);
-                last_exp = (Expr) p;
-            }
+            if (null != e.elements.get(0).get(Label.Plus))
+                l = (Expr) (new Plus(l, r));
 
-            if ( null != elements.get(i).get(Label.Minus)) {
-                if (i == 1) {
-                    l = exp;
-                } else {
-                    l = last_exp;
-                }
-                r = (Expr) elements.get(i).get(Label.Mexp);
-                m = new Minus(l, r);
-
-                last_exp = (Expr) m;
-            }
+            else if (null != e.elements.get(0).get(Label.Minus))
+                l = (Expr) (new Minus(l, r));
         }
 
-        return (BinOP) last_exp;
+          return l;
+    }
+
+    /**
+     * Aexp ((Eqeq / Ne) Aexp)* 
+     */
+    public Expr MakeRexp (String input, int start, int end, List<TreeNode> elements) {
+        Expr l = (Expr) elements.get(0);
+        Expr r = null;
+        
+        if (null == elements.get(1))
+            return (Expr) l;
+ 
+        for (TreeNode e : elements.get(1)) {
+            r = (Expr) e.get(Label.Sexp);
+
+            if (null != e.elements.get(0).get(Label.Eqeq))
+                l = (Expr) (new Eq(l, r));
+
+            else if (null != e.elements.get(0).get(Label.Ne))
+                l = (Expr) (new Dif(l, r));
+        }
+
+        return l;
+    }
+
+    /**
+     * Aexp Lt Aexp
+     */
+    public Expr MakeLt (String input, int start, int end, List<TreeNode> elements) {
+        Expr left = (Expr)elements.get(0);
+        Expr right = (Expr)elements.get(2);
+        return (Expr) (new Lt(left, right));
+    }
+    
+    /**
+     * Rexp (And Rexp)* 
+     */
+    public Expr MakeExp (String input, int start, int end, List<TreeNode> elements) {
+        Expr l = (Expr) elements.get(0);
+        Expr r = null;
+        
+        if (null == elements.get(1))
+            return (Expr) l;
+ 
+        for (TreeNode e : elements.get(1)) {
+            r = (Expr) e.get(Label.Sexp);
+
+            if (null != e.elements.get(0).get(Label.And))
+                l = (Expr) (new And(l, r));
+        }
+
+        return l;
     }
 }
+

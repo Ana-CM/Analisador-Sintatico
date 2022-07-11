@@ -1,6 +1,6 @@
-package ast.binop;
+package ast.expr.binop;
 
-import ast.Expr;
+import ast.expr.Expr;
 
 /*
 * Esta classe representa uma operação de comparação.
@@ -14,7 +14,7 @@ public class Lt extends BinOP {
     public String toString(){
         String s = getLeft().toString();
         String ss = getRight().toString();
-        if(getRight() instanceof Add){
+        if(getRight() instanceof Plus){
             ss = "(" + ss + ")";
         }
         return   s + " + " + ss;

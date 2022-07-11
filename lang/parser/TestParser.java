@@ -12,7 +12,7 @@ import java.util.List;
 
 public class TestParser {
    private ParseAdaptor adp;
-   private String okSrcs = "testes/sintaxe/certo/";
+   private String okSrcs = "testes/sintaxe/teste/";
    private File f;
    
    public TestParser(ParseAdaptor adp){

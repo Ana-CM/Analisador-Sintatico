@@ -4,7 +4,7 @@ package ast.expr;
  * Esta classe representa uma expressão entre parênteses.
  * LPar Exp RPar  
  */
-public class ParExp {
+public class ParExp extends Expr{
 
     private Expr expr;
 

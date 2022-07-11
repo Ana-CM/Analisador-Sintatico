@@ -27,6 +27,7 @@ public enum Label {
     Eqeq,
     Exp,
     Exps,
+    False,
     Func,
     Gt,
     Identifier,
@@ -38,7 +39,6 @@ public enum Label {
     LPar,
     LValue,
     LiteralCharacter,
-    Logic,
     Lt,
     Mexp,
     Minus,
@@ -63,6 +63,11 @@ public enum Label {
     Space,
     Spacing,
     Times,
+    True,
+    TyBool,
+    TyChar,
+    TyFloat,
+    TyInt,
     Type,
     UserType
 }
