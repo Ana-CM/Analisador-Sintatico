@@ -1,7 +1,14 @@
+/**
+ * Ana Carolina Mendes Lino -  201865212AC 
+ * Thiago Silva Miranda - 201865553C
+ */
+
 package ast;
 
 import ast.btype.BType;
 import lang.TreeNode;
+import visitors.Visitor;
+
 
 /**
  * Btype (LBrack RBrack)*
@@ -36,4 +43,6 @@ public class Type extends TreeNode{
         }
         return str;
     }
+
+    public void accept(Visitor v){ v.visit(this);}
 }

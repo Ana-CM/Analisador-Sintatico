@@ -1,10 +1,17 @@
+/**
+ * Ana Carolina Mendes Lino -  201865212AC 
+ * Thiago Silva Miranda - 201865553C
+ */
+
 package ast.expr;
 
 import java.util.ArrayList;
 import java.util.List;
+import visitors.Visitor;
+
 
 /*
- * Esta classe representa uma variável.
+ * Identifier (LBrack Exp RBrack / Dot Identifier)*
  */
 public class LValue extends Expr{
     List<Object> idx = new ArrayList <Object>();
@@ -42,4 +49,5 @@ public class LValue extends Expr{
         }  
         return  s; 
     }
+    public void accept(Visitor v){ v.visit(this);}
 }

@@ -1,6 +1,12 @@
+/**
+ * Ana Carolina Mendes Lino -  201865212AC 
+ * Thiago Silva Miranda - 201865553C
+ */
+
 package ast;
 
 import lang.TreeNode;
+import visitors.Visitor;
 
 /**
  * Data Type LBrace Declaration+ RBrace
@@ -37,4 +43,6 @@ public class Definition extends TreeNode {
         s += "}";
         return s;
     }  
+
+    public void accept(Visitor v){ v.visit(this);}
 }

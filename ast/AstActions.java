@@ -1,3 +1,8 @@
+/**
+ * Ana Carolina Mendes Lino -  201865212AC 
+ * Thiago Silva Miranda - 201865553C
+ */
+
 package ast;
 
 import java.util.ArrayList;
@@ -418,7 +423,7 @@ public class AstActions implements Actions {
         Expr l = (Expr) elements.get(0);
         Expr r = null;
         
-        if (null == elements.get(1))
+        if (null == elements.get(1).get(Label.Sexp))
             return (Expr) l;
  
         for (TreeNode e : elements.get(1)) {
@@ -444,7 +449,7 @@ public class AstActions implements Actions {
         Expr l = (Expr) elements.get(0);
         Expr r = null;
         
-        if (null == elements.get(1))
+        if (null == elements.get(1).get(Label.Mexp))
             return (Expr) l;
  
         for (TreeNode e : elements.get(1)) {
@@ -467,7 +472,7 @@ public class AstActions implements Actions {
         Expr l = (Expr) elements.get(0);
         Expr r = null;
         
-        if (null == elements.get(1))
+        if (null == elements.get(1).get(Label.Aexp))
             return (Expr) l;
  
         for (TreeNode e : elements.get(1)) {
@@ -499,7 +504,7 @@ public class AstActions implements Actions {
         Expr l = (Expr) elements.get(0);
         Expr r = null;
         
-        if (null == elements.get(1))
+        if (null == elements.get(1).get(Label.Rexp))
             return (Expr) l;
  
         for (TreeNode e : elements.get(1)) {
@@ -511,5 +516,6 @@ public class AstActions implements Actions {
 
         return l;
     }
+
 }
 

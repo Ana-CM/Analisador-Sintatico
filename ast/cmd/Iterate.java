@@ -1,6 +1,13 @@
+/**
+ * Ana Carolina Mendes Lino -  201865212AC 
+ * Thiago Silva Miranda - 201865553C
+ */
+
 package ast.cmd;
 
 import ast.expr.Expr;
+import visitors.Visitor;
+
 
 /**
  * Iterate LPar Exp RPar Cmd 
@@ -22,4 +29,6 @@ public class Iterate extends Cmd {
         s += cmd.toString();
         return s;
     }
+
+    public void accept(Visitor v){ v.visit(this);}
 }

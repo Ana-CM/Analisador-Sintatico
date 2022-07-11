@@ -1,4 +1,12 @@
+/**
+ * Ana Carolina Mendes Lino -  201865212AC 
+ * Thiago Silva Miranda - 201865553C
+ */
+
 package ast.btype;
+
+import visitors.Visitor;
+
 
 /**
  * UserType
@@ -18,4 +26,6 @@ public class UserType extends BType {
     public String toString() {
         return this.name;
     }
+
+    public void accept(Visitor v){ v.visit(this);}
 }

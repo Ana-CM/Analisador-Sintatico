@@ -1,6 +1,13 @@
+/**
+ * Ana Carolina Mendes Lino -  201865212AC 
+ * Thiago Silva Miranda - 201865553C
+ */
+
 package ast;
 
 import lang.TreeNode;
+import visitors.Visitor;
+
 
 /**
  * Spacing Definition* Func+ EndOfFile
@@ -31,4 +38,14 @@ public class Prog extends TreeNode{
         }
         return s;
     }
+
+    public Definition[] getDefs() {
+        return this.defs;
+    }
+    
+    public Func[] getFuncs() {
+        return this.funcs;
+    }
+
+    public void accept(Visitor v){ v.visit(this);}
 }

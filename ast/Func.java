@@ -1,7 +1,14 @@
+/**
+ * Ana Carolina Mendes Lino -  201865212AC 
+ * Thiago Silva Miranda - 201865553C
+ */
+
 package ast;
 
 import ast.cmd.Cmd;
 import lang.TreeNode;
+import visitors.Visitor;
+
 
 /**
  * Identifier LPar Params? RPar  ( Colon Type ( Comma Type)* )? LBrace Cmd* RBrace
@@ -117,5 +124,7 @@ public class Func extends TreeNode{
 
         return s;
     }
+
+    public void accept(Visitor v){ v.visit(this);}
 }
   

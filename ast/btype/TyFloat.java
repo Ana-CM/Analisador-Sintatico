@@ -1,4 +1,12 @@
+/**
+ * Ana Carolina Mendes Lino -  201865212AC 
+ * Thiago Silva Miranda - 201865553C
+ */
+
 package ast.btype;
+
+import visitors.Visitor;
+
 
 /**
  * TyFloat
@@ -15,4 +23,5 @@ public class TyFloat extends BType {
     public String toString() {
         return "Float";
     }
+    public void accept(Visitor v){ v.visit(this);}
 }
