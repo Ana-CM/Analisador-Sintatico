@@ -22,6 +22,14 @@ public class Iterate extends Cmd {
         this.cmd = cmd;
     }
 
+    public Expr getE() {
+        return e;
+    }
+
+    public Cmd getCmd() {
+        return cmd;
+    }
+
     public String toString() {
         String s = "iterate (";
         s += e.toString();

@@ -23,6 +23,10 @@ public class UserType extends BType {
         return t instanceof UserType && ((UserType) t).name.equals(name);
     }
 
+    public String getName() {
+        return name;
+    }
+
     public String toString() {
         return this.name;
     }

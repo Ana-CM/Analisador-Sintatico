@@ -11,8 +11,8 @@ import visitors.Visitor;
 
 public abstract class Expr extends TreeNode {
       
-      public Expr(){
-      }
-     
-     public abstract void accept(Visitor v);
+    public Expr(){
+    }
+    
+    public abstract void accept(Visitor v);
 }

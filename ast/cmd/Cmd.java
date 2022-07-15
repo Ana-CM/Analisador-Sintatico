@@ -6,9 +6,12 @@
 package ast.cmd;
 
 import lang.TreeNode;
+import visitors.Visitor;
 
 public abstract class Cmd extends TreeNode {
       
     public Cmd(){
     }
+
+    public abstract void accept(Visitor v);
 }

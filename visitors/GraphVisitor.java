@@ -57,9 +57,12 @@ public class GraphVisitor extends Visitor {
     
     public void visit(Prog p){
         String s = node(0, "Program");
-        for(Definition d : p.getDefs()){
-            d.accept(this);
-            edge(0,s,nodes.pop());    
+
+        if ( null != p.getDefs()) {
+            for(Definition d : p.getDefs()){
+                d.accept(this);
+                edge(0,s,nodes.pop());    
+            }
         }
         
         for(Func f : p.getFuncs()){
@@ -105,7 +108,7 @@ public class GraphVisitor extends Visitor {
         nodes.push(n);
     }
 
-    public void Type(Type t){
+    public void visit(Type t){
         String n = node(0, "Type");
 
         t.getType().accept(this);
@@ -279,6 +282,10 @@ public class GraphVisitor extends Visitor {
         nodes.push(node(0,"Char")); 
     }
 
+    public void visit(UserType t){  
+        nodes.push(node(0,"UserType " + t.getName())); 
+    }
+
     public void visit(Null t){
         nodes.push(node(0,"null")); 
     }
@@ -333,100 +340,117 @@ public class GraphVisitor extends Visitor {
     }
 
     public void visit(ParExp e){
+        String n = node(0, "( )");
         e.getExpr().accept(this);
-        nodes.push(nodes.pop());
-    }
-
-
-    //-------
-
-    public void visit(Return e){
-        String s = node(0,"@");
-        e.getReturn().accept(this);
-        edge(0,s,nodes.pop());
-        nodes.push(s);
+        edge(0,n,nodes.pop());
+        nodes.push(n);
     }
 
     public void visit(If e){
         String s = node(0,"If"); 
-        e.getTeste().accept(this);
+        e.getExp().accept(this);
         edge(0,s,nodes.pop());
-        e.getThen().accept(this);
+        e.getCmd().accept(this);
         edge(0,s,nodes.pop());
         if(e.getElseCmd() != null){
-            e.getElse().accept(this);
+            e.getElseCmd().accept(this);
             edge(0,s,nodes.pop());   
         }
         nodes.push(s);
     }
 
-    public void visit(Var e){    nodes.push(node(0,""+e.toString()));}
-    
-    public void visit(While e){
-        String s = node(0,"If"); 
-        e.getTeste().accept(this);
+    public void visit(Iterate e){
+        String s = node(0,"Iterate"); 
+        e.getE().accept(this);
         edge(0,s,nodes.pop());
         
-        e.getBody().accept(this);
+        e.getCmd().accept(this);
         edge(0,s,nodes.pop());
         nodes.push(s);
     }
-    
-    public void visit(Call e){   
-        String n = node(0, "Call " + e.getName());
-        String args = node(0,"Args");
-        if(e.getArgs() != null){
-        for(Expr ex : e.getArgs()){
-            ex.accept(this);
-            edge(0,args,nodes.pop());
-        }
-        edge(0,n,args);
-        }
-        nodes.push(n);
-    }
-    
-    public void visit(StmtList e){
-        String n = node(0,"StmtList");
-        e.getCmd1().accept(this); 
-        edge(0,n,nodes.pop());
-        
-        e.getCmd2().accept(this);
-        edge(0,n,nodes.pop());
-        nodes.push(n);
-    }
-    
+
     public void visit(Func f){
-        String n = node(0,"Func " + f.getID());
-        f.getTipo().accept(this);
-        edge(0,n,nodes.pop());
-        
-        String prs = node(0,"Params");
-        for(Param p : f.getParams()){
-            p.accept(this);
-            edge(0,prs,nodes.pop());
+        String n = node(0,"Func " + f.getId());
+
+        if ( null != f.getParams()) {
+            f.getParams().accept(this);
+            edge(0,n,nodes.pop());
         }
-        edge(0,n,prs);
-        f.getBody().accept(this);
+        
+        if ( null != f.getType()) {
+            String types = node(0,"Types");
+            for(Type t : f.getType()){
+                t.accept(this);
+                edge(0,types,nodes.pop());
+            }
+            edge(0,n,types);
+        }
+
+        String cmds = node(0,"Cmds");
+        for(Cmd c : f.getCmd()){
+            c.accept(this);
+            edge(0,cmds,nodes.pop());
+        }
+        edge(0,n,cmds);
+
+        nodes.push(n);
+    }
+
+    public void visit(CmdBrace c) {
+        String n = node(0,"CmdBrace");
+        
+        for (Cmd c1 : c.getCmds()) {
+            c1.accept(this);
+            edge(0,n,nodes.pop());
+        }
+        nodes.push(n);
+    }
+
+    public void visit(CallBrack e){   
+        String n = node(0, "Call " + e.getId());
+        String params = node(0,"Params");
+        if(e.getParams() != null){
+            for(Expr ex : e.getParams()){
+                ex.accept(this);
+                edge(0,params,nodes.pop());
+            }
+            edge(0,n,params);
+        }
+        e.getExp().accept(this);
         edge(0,n,nodes.pop());
         nodes.push(n);
     }
-    
-    public void visit(Inst e){
-        String n = node(0,"$");
-        e.getID().accept(this);
-        edge(0,n,nodes.pop());
-        
-        e.getTipo().accept(this);
-        
-        e.getSize();
-        edge(0,n,nodes.pop());
+
+    public void visit(CallAttr e){   
+        String n = node(0, "Call " + e.getId());
+        String params = node(0,"Params");
+        if(e.getParams() != null){
+            for(Expr ex : e.getParams()){
+                ex.accept(this);
+                edge(0,params,nodes.pop());
+            }
+            edge(0,n,params);
+        }
+
+        String lvalues = node(0,"LValues");
+        if(e.getLvalue() != null){
+            for(LValue l : e.getLvalue()){
+                l.accept(this);
+                edge(0,lvalues,nodes.pop());
+            }
+            edge(0,n,lvalues);
+        }
         nodes.push(n);
     }
-    
-    public void visit(TyArr t){   
-        String s = node(0,"TyArr");
-        t.getTyArg().accept(this);
-        edge(0,s,nodes.pop());
+
+    public void visit(Return e){
+        String s = node(0,"return");
+
+        for(Expr ex : e.getReturn()){
+            ex.accept(this);
+            edge(0,s,nodes.pop());
+        }
         nodes.push(s);
     }
+
 }

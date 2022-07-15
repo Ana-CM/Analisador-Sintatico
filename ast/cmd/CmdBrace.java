@@ -18,6 +18,10 @@ public class CmdBrace extends Cmd {
         this.cmds = cmds;
     }
 
+    public Cmd[] getCmds(){
+        return cmds;
+    }
+
     //@Override
     public String toString(){
 

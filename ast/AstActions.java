@@ -77,7 +77,7 @@ public class AstActions implements Actions {
                 if ( i == 0 ) {
                     params[i] = (Expr)elements.get(2).elements.get(i);
                 } else {
-                    params[i] = (Expr)elements.get(2).elements.get(1).elements.get(i).get(Label.Exp);
+                    params[i] = (Expr)elements.get(2).elements.get(1).elements.get(i-1).get(Label.Exp);
                 }
             }
         }
@@ -101,8 +101,22 @@ public class AstActions implements Actions {
      * "'" ("\\n" / "\\r" / "\\t" / "\\b" /  "\\\\" / (.) ) "'" Spacing 
      */
     public LiteralCharacter MakeLiteralCharacter(String input, int start, int end, List<TreeNode> elements) {
-        char literalCharacter = (char)elements.get(1).text.charAt(0);
-        return new LiteralCharacter(literalCharacter);
+        String s = elements.get(1).text;
+
+        switch(s) {
+            case "\\n":
+                return new LiteralCharacter('\n');
+            case "\\r":
+                return new LiteralCharacter('\r');
+            case "\\t":
+                return new LiteralCharacter('\t');
+            case "\\b":
+                return new LiteralCharacter('\b');
+            case "\\\\":
+                return new LiteralCharacter('\\');
+            default:
+                return new LiteralCharacter(s.charAt(0));
+        }
     }
     
     /**
@@ -173,7 +187,7 @@ public class AstActions implements Actions {
                 if ( i == 0 ) {
                     params[i] = (Expr)elements.get(2).elements.get(i);
                 } else {
-                    params[i] = (Expr)elements.get(2).elements.get(1).elements.get(i).get(Label.Exp);
+                    params[i] = (Expr)elements.get(2).elements.get(1).elements.get(i - 1).get(Label.Exp);
                 }
             }
         }
@@ -323,8 +337,7 @@ public class AstActions implements Actions {
             pair = Map.entry(id, type);
             p.add(pair);
         }
-        
-    
+
         return new Params(p);
     }
 
@@ -338,7 +351,8 @@ public class AstActions implements Actions {
         Type[] type = null;
         Cmd[] cmd = null;
 
-        params = (Params) elements.get(2);
+        if ( elements.get(2) instanceof Params)
+            params = (Params) elements.get(2);
 
         if ( null != elements.get(4).get(Label.Type) ) {
             type = new Type[1 + elements.get(4).elements.get(2).elements.size()];
@@ -423,19 +437,20 @@ public class AstActions implements Actions {
         Expr l = (Expr) elements.get(0);
         Expr r = null;
         
-        if (null == elements.get(1).get(Label.Sexp))
+        if (0 == elements.get(1).elements.size())
             return (Expr) l;
  
         for (TreeNode e : elements.get(1)) {
             r = (Expr) e.get(Label.Sexp);
+            String operator = e.elements.get(0).elements.get(0).text;
 
-            if (null != e.elements.get(0).get(Label.Times))
+            if (operator.contains("*"))
                 l = (Expr) (new Times(l, r));
 
-            else if (null != e.elements.get(0).get(Label.Div))
+            else if (operator.contains("/"))
                 l = (Expr) (new Div(l, r));
 
-            else if (null != e.elements.get(0).get(Label.Mod))
+            else if (operator.contains("%"))
                 l = (Expr) (new Mod(l, r));
         }
 
@@ -449,20 +464,23 @@ public class AstActions implements Actions {
         Expr l = (Expr) elements.get(0);
         Expr r = null;
         
-        if (null == elements.get(1).get(Label.Mexp))
+        if (0 == elements.get(1).elements.size())
             return (Expr) l;
  
         for (TreeNode e : elements.get(1)) {
-            r = (Expr) e.get(Label.Sexp);
-
-            if (null != e.elements.get(0).get(Label.Plus))
+            r = (Expr) e.get(Label.Mexp);
+            String operator = e.elements.get(0).elements.get(0).text;
+            
+            if (operator.contains("+"))
                 l = (Expr) (new Plus(l, r));
-
-            else if (null != e.elements.get(0).get(Label.Minus))
+        
+            else if (operator.contains("-")){
+                System.out.println("minus");
                 l = (Expr) (new Minus(l, r));
+            }
         }
 
-          return l;
+        return l;
     }
 
     /**
@@ -472,16 +490,17 @@ public class AstActions implements Actions {
         Expr l = (Expr) elements.get(0);
         Expr r = null;
         
-        if (null == elements.get(1).get(Label.Aexp))
+        if (0 == elements.get(1).elements.size())
             return (Expr) l;
  
         for (TreeNode e : elements.get(1)) {
-            r = (Expr) e.get(Label.Sexp);
+            r = (Expr) e.get(Label.Aexp);
+            String operator = e.elements.get(0).elements.get(0).text;
 
-            if (null != e.elements.get(0).get(Label.Eqeq))
+            if (operator.contains("=="))
                 l = (Expr) (new Eq(l, r));
 
-            else if (null != e.elements.get(0).get(Label.Ne))
+            else if (operator.contains("!="))
                 l = (Expr) (new Dif(l, r));
         }
 
@@ -504,13 +523,14 @@ public class AstActions implements Actions {
         Expr l = (Expr) elements.get(0);
         Expr r = null;
         
-        if (null == elements.get(1).get(Label.Rexp))
+        if (0 == elements.get(1).elements.size())
             return (Expr) l;
  
         for (TreeNode e : elements.get(1)) {
-            r = (Expr) e.get(Label.Sexp);
+            r = (Expr) e.get(Label.Rexp);
+            String operator = e.elements.get(0).elements.get(0).text;
 
-            if (null != e.elements.get(0).get(Label.And))
+            if (operator.contains("&&"))
                 l = (Expr) (new And(l, r));
         }
 

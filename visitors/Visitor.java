@@ -38,24 +38,24 @@ public abstract class Visitor {
     public abstract void visit(NumberDecimal e); //V
     public abstract void visit(LiteralCharacter e); //V
     public abstract void visit(LValue e); //V
-    public abstract void visit(CallBrack e);
+    public abstract void visit(CallBrack e); //V
     public abstract void visit(Null e); //V
     public abstract void visit(New e); //V
-    public abstract void visit(ParExp e); //CORRIGIR
+    public abstract void visit(ParExp e); //V
     
-    public abstract void visit(Attr e); //CORRIGIR
-    public abstract void visit(If e);
+    public abstract void visit(Attr e); //V
+    public abstract void visit(If e); //V
     public abstract void visit(Iterate e);
     public abstract void visit(Print e); //V
     public abstract void visit(Read e); //V
-    public abstract void visit(CmdBrace e);
-    public abstract void visit(Func f);
-    public abstract void visit(CallAttr e);
-    public abstract void visit(Return e);
+    public abstract void visit(CmdBrace e); //V
+    public abstract void visit(Func f); //V
+    public abstract void visit(CallAttr e); //V
+    public abstract void visit(Return e); //V
     
     public abstract void visit(TyInt t); //V
     public abstract void visit(TyFloat t); //V
     public abstract void visit(TyChar t); //V
     public abstract void visit(TyBool t); //V
-    public abstract void visit(UserType t);
+    public abstract void visit(UserType t); //V
 }
