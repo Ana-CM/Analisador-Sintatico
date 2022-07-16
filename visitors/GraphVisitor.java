@@ -209,7 +209,7 @@ public class GraphVisitor extends Visitor {
         e.getRight().accept(this);
         String r = nodes.pop();
         String l = nodes.pop();
-        String n = node(0,"=");
+        String n = node(0,"==");
 
         edge(0,n,l);
         edge(0,n,r);
@@ -301,6 +301,10 @@ public class GraphVisitor extends Visitor {
         String s = node(0,"new");
         e.getType().accept(this);
         edge(0,s,nodes.pop());
+        if (null != e.getExp()) {
+            e.getExp().accept(this);
+            edge(0,s,nodes.pop());
+        }
         nodes.push(s);
     }
 

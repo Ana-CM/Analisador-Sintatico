@@ -475,7 +475,6 @@ public class AstActions implements Actions {
                 l = (Expr) (new Plus(l, r));
         
             else if (operator.contains("-")){
-                System.out.println("minus");
                 l = (Expr) (new Minus(l, r));
             }
         }
