@@ -403,7 +403,8 @@ public class AstActions implements Actions {
         Definition[] defs = null;
         Func[] funcs = null;
 
-        if ( null != elements.get(1).get(Label.Definition) ) {
+
+        if ( 0 != elements.get(1).elements.size() ) {
             defs = new Definition[elements.get(1).elements.size()];
             for (int i = 0; i < defs.length; i++) {
                 defs[i] = (Definition) elements.get(1).elements.get(i);
