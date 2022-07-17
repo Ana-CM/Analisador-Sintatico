@@ -23,7 +23,8 @@ public class  InterpretVisitor extends Visitor {
     public InterpretVisitor(){
         env = new Stack<HashMap<String,Object>>();
         env.push(new HashMap<String,Object>());
-        funcs = new  HashMap<String,Func>();
+        funcs = new HashMap<String,Func>();
+        data = new HashMap<String, Definition>();
         operands = new Stack<Object>();
         retMode = false;
         debug = false;
