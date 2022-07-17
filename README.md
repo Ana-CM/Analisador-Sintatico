@@ -31,5 +31,22 @@ bash build-parser.sh
 
 ## Testes
 
-Para os testes está sendo utilizada a pasta testes/sintaxe/certo/, onde estão os arquivos de teste que devem ser compilados com sucesso.
-Caso deseje realizar testes em outras pastas basta alterar o diretório de testes no arquivo lang/parser/TestParser.java.
+Existem três funcionalidades implementadas. O usuário pode executar um bateria de testes sintáticos, fazer a interpretação de um arquivo em específico e gerar um arquivo .graphviz para visualizar a AST de um arquivo em específico. 
+
+Para realizar a bateria de testes:
+
+```
+java LangCompiler -bs
+```
+
+Para interpretar uma arquivo:
+
+```
+java LangCompiler -i [caminho_do_arquivo]
+```
+
+Para gerar o arquivo .graphviz:
+
+```
+java LangCompiler -gvz [caminho_do_arquivo]
+```
