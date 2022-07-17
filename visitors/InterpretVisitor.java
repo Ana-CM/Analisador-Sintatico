@@ -244,33 +244,38 @@ public class  InterpretVisitor extends Visitor {
             Func f = funcs.get(e.getId());
 
             if(f != null){
-                for(Expr exp : e.getParams()){
-                    exp.accept(this);
+                if (null != e.getParams()) {
+                    for(Expr exp : e.getParams()){
+                        exp.accept(this);
+                    }
+                    f.accept(this);
                 }
-                f.accept(this);
                 
-                operands.pop();
-                for (int i = vs.length - 1; i >= 0; i--) {
-                    Object exp = operands.pop();
+                if (null != vs) {
                     
-                    if (exp instanceof Integer) {
-                        exp = new NumberInteger((int)exp);
-                    }
-                    else if (exp instanceof Float) {
-                        exp = new NumberDecimal((float)exp);
-                    }
-                    else if (exp instanceof Boolean && (boolean)exp == true) {
-                        exp = new True();
-                    }
-                    else if (exp instanceof Boolean && (boolean)exp == false) {
-                        exp = new False();
-                    }
-                    else if (exp instanceof Character) {
-                        exp = new LiteralCharacter((char)exp);
-                    }
+                    operands.pop();
+                    for (int i = vs.length - 1; i >= 0; i--) {
+                        Object exp = operands.pop();
+                        
+                        if (exp instanceof Integer) {
+                            exp = new NumberInteger((int)exp);
+                        }
+                        else if (exp instanceof Float) {
+                            exp = new NumberDecimal((float)exp);
+                        }
+                        else if (exp instanceof Boolean && (boolean)exp == true) {
+                            exp = new True();
+                        }
+                        else if (exp instanceof Boolean && (boolean)exp == false) {
+                            exp = new False();
+                        }
+                        else if (exp instanceof Character) {
+                            exp = new LiteralCharacter((char)exp);
+                        }
 
-                    Attr a = new Attr(vs[i], (Expr)exp);
-                    a.accept(this);
+                        Attr a = new Attr(vs[i], (Expr)exp);
+                        a.accept(this);
+                    }
                 }
             }else{
                 throw new RuntimeException( " (" + e.text + ", at position " + e.offset  + ") Função não definida " +  e.getId());

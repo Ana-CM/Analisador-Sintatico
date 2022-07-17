@@ -427,8 +427,8 @@ public class GraphVisitor extends Visitor {
 
     public void visit(CallAttr e){   
         String n = node(0, "Call " + e.getId());
-        String params = node(0,"Params");
         if(e.getParams() != null){
+            String params = node(0,"Params");
             for(Expr ex : e.getParams()){
                 ex.accept(this);
                 edge(0,params,nodes.pop());
@@ -436,9 +436,10 @@ public class GraphVisitor extends Visitor {
             edge(0,n,params);
         }
 
-        String lvalues = node(0,"LValues");
         if(e.getLvalue() != null){
+            String lvalues = node(0,"LValues");
             for(LValue l : e.getLvalue()){
+                System.out.println(l);
                 l.accept(this);
                 edge(0,lvalues,nodes.pop());
             }
