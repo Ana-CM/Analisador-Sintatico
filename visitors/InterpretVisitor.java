@@ -7,15 +7,15 @@ import ast.expr.*;
 import ast.expr.binop.*;
 
 import java.util.HashMap;
+import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.Stack;
-
-import lang.TreeNode;
 
 public class  InterpretVisitor extends Visitor {
 
     private Stack<HashMap<String,Object>> env;     
-    private HashMap<String,Func> funcs;     
+    private HashMap<String,Func> funcs;
+    private HashMap<String,Definition> data;       
     private Stack<Object> operands;
     private boolean retMode, debug;
     
@@ -34,25 +34,41 @@ public class  InterpretVisitor extends Visitor {
         this.debug = debug;
     }
 
-    public void visit(Prog p){ //FIXME: Conferir se esta funcao está correta.
+    public void visit(Prog p){
         Func main = null;
+        
+        if (null != p.getDefs()) {
+            for(Definition d : p.getDefs()){
+                UserType ut = (UserType) d.getType().getType();
+                data.put(ut.getName(),d);
+            }
+        }
+        
         for(Func f : p.getFuncs()){
             funcs.put(f.getId(),f);
             if(f.getId().equals("main")){
                 main = f;
             }
         }
+
         if(main == null){
             throw new RuntimeException( "Não há uma função chamada main ! abortando ! ");
         }
         main.accept(this);
     }
 
+    public void visit(Definition e){}
+
+    public void visit(Decl e){}
+
     public void visit(Func f){
         HashMap<String,Object> localEnv = new HashMap<String,Object>();
-        for(int i = f.getParams().getP().size()-1; i >= 0; i--){
-            localEnv.put(f.getParams().getP().get(i).getKey(),operands.pop());
-        } 
+
+        if (null != f.getParams()) {
+            for(int i = f.getParams().getP().size()-1; i >= 0; i--){
+                localEnv.put(f.getParams().getP().get(i).getKey(),operands.pop());
+            }
+        }
         env.push(localEnv);
         for (Cmd c : f.getCmd()) {
             if (retMode) break;
@@ -67,7 +83,7 @@ public class  InterpretVisitor extends Visitor {
             }
         }
         env.pop();
-        retMode= false;
+        retMode = false;
     }
 
     public void visit(Params e){}
@@ -98,68 +114,171 @@ public class  InterpretVisitor extends Visitor {
         }
     }
 
-    // public void visit(New e){ 
-    //     try{
-    //         LValue v = e.get
-    //         e.getSize().accept(this);
-    //         Integer size = (Integer)operands.pop();
-    //         ArrayList val = new ArrayList(size);
+    public void visit(New e){ 
+        try{
+            Object val;
+            Type t = e.getType();
 
+            if (null != e.getExp()) {
+                e.getExp().accept(this);
+                Integer size = (Integer)operands.pop();
+                val = new ArrayList(size);
 
+                if (t.getType() instanceof UserType) {
+                    Definition def = data.get(((UserType)t.getType()).getName());
 
+                    for(int i = 0; i< size; i++){ 
+                        HashMap<String, Object> map = new HashMap<String, Object>();
 
+                        for(Decl decl : def.getDeclarations()){
+                            map.put(decl.getId(), null);
+                        }
+                        ((ArrayList)val).add(map);
 
-    //         //----
-            
+                    }
+                } else {
+                    for(int i = 0; i< size; i++){ 
+                        ((ArrayList)val).add(null);
+                    }
+                }
+            } 
+            else if(t.getType() instanceof UserType){
+                Definition def = data.get(((UserType)t.getType()).getName());
+                HashMap<String, Object> map = new HashMap<String, Object>();
 
-    //         for(int i = 0; i< size; i++){ val.add(null);    }
-            
-    //         if( env.peek().get(v.getName()) == null ){
-    //             env.peek().put(v.getName(), val);
-    //         }else if(  v.getIdx() != null && v.getIdx().length > 0 ){
-    //             ArrayList arr = (ArrayList)env.peek().get(v.getName());
-    //             for(int k = 0; k < v.getIdx().length-1; k++ ){
-    //                v.getIdx()[k].accept(this);
-    //                arr = (ArrayList)arr.get( (Integer)operands.pop());
-    //             }
-    //             v.getIdx()[v.getIdx().length-1 ].accept(this);
-    //             arr.set( (Integer)operands.pop(), val);
-    //         }
-    //         else{
-    //            env.peek().put(e.getID().getName(), val);
-    //         }
-    //     }catch(Exception x){
-    //         throw new RuntimeException( " (" + e.text + ", at position " + e.offset  + ") " + x.getMessage() );
-    //     }
-    // }
+                for(Decl decl : def.getDeclarations()){
+                    map.put(decl.getId(), null);
+                }
+                val = map;
+            }
+            else {
+                val = new Object();
+            }
 
-    // public  void visit(Attr e){
-    //     try{   
-    //         LValue v = e.getLvalue();
-    //         e.getExp().accept(this);
-    //         Object val = operands.pop();
-            
-    //         if(v.getIdx() != null && v.getIdx().size() > 0 ){
+            operands.push(val);
 
-    //             if (env.peek().get(v.getName()) instanceof ArrayList) {
-    //                 ArrayList arr = (ArrayList)env.peek().get(v.getName());
-    //                 for(int k = 0; k < v.getIdx().size()-1; k++ ){
-    //                     v.getIdx().get(k).accept(this);
-    //                     arr = (ArrayList)arr.get( (Integer)operands.pop());
-    //                 }
-    //                 v.getIdx().get(v.getIdx().size()-1).accept(this);
-    //                 arr.set( (Integer)operands.pop(), val);
-    //             }
-    //             else if (env.peek().get(v.getName()) instanceof HashMap) {
-                    
-    //             }
-    //         }
-    //         else{ env.peek().put(e.getLvalue().getName(), val);}
+        }catch(Exception x){
+            throw new RuntimeException( " (" + e.text + ", at position " + e.offset  + ") " + x.getMessage() );
+        }
+    }
+
+    public  void visit(Attr e){
+        try{   
+            LValue v = e.getLvalue();
+            e.getExp().accept(this);
+            Object val = operands.pop();
+            Object o;
+
+            if(v.getIdx() != null && v.getIdx().size() > 0 ){
+                Object r = env.peek().get(v.getName());
+
+                for(int k = 0; k < v.getIdx().size()-1; k++ ){
+                    o = v.getIdx().get(k);
+                    if (o instanceof Expr) {
+                        ((Expr)o).accept(this);
+                        r = ((ArrayList)r).get( (Integer)operands.pop());
+                    }
+                    else if (o instanceof String) {
+                        r = ((HashMap)r).get(o);
+                    }
+                }
+
+                o = v.getIdx().get(v.getIdx().size()-1);
+                if (o instanceof Expr) {
+                    ((Expr)v.getIdx().get(v.getIdx().size()-1)).accept(this);
+                    ((ArrayList)r).set( (Integer)operands.pop(), val);
+                }
+                else if (o instanceof String) {
+                    if (!((HashMap)r).containsKey(o)) {
+                        throw new RuntimeException( "Atributo " + o + " não declarado");
+                    }
+                    ((HashMap)r).put(o, val);
+                }
+            }
+            else{ env.peek().put(e.getLvalue().getName(), val);}
         
-    //     }catch(Exception x){
-    //         throw new RuntimeException( " (" + e.text + ", at position " + e.offset  + ") " + x.getMessage() );
-    //     }
-    // }
+        }catch(Exception x){
+            throw new RuntimeException( " (" + e.text + ", at position " + e.offset  + ") " + x.getMessage() );
+        }
+    }
+
+    public  void visit(CallBrack e){
+        try{
+            e.getExp().accept(this);
+            int pos = (int)operands.pop();
+            Func f = funcs.get(e.getId());
+            Object result = null;
+
+            if(f != null){
+                for(Expr exp : e.getParams()){
+                    exp.accept(this);
+                }
+                f.accept(this);
+                
+                int size = (int) operands.pop();
+                for (int i = size - 1; i >= 0; i--) {
+                    if (pos == i) 
+                        result = operands.pop();
+                    else
+                        operands.pop();
+                }
+
+                if (null != result) {
+                    operands.push(result);
+                } else{
+                    throw new RuntimeException( " (" + e.text + ", at position " + e.offset  + ") " + "posição " + pos + " é invalida");
+                }
+            }else{
+                throw new RuntimeException( " (" + e.text + ", at position " + e.offset  + ") Função não definida " +  e.getId());
+            }
+            
+        }catch(Exception x){
+            throw new RuntimeException( " (" + e.text + ", at position " + e.offset  + ") " + x.getMessage() );
+        }
+    }
+
+    public  void visit(CallAttr e){
+        try{
+            LValue[] vs = e.getLvalue();
+            Func f = funcs.get(e.getId());
+
+            if(f != null){
+                for(Expr exp : e.getParams()){
+                    exp.accept(this);
+                }
+                f.accept(this);
+                
+                operands.pop();
+                for (int i = vs.length - 1; i >= 0; i--) {
+                    Object exp = operands.pop();
+                    
+                    if (exp instanceof Integer) {
+                        exp = new NumberInteger((int)exp);
+                    }
+                    else if (exp instanceof Float) {
+                        exp = new NumberDecimal((float)exp);
+                    }
+                    else if (exp instanceof Boolean && (boolean)exp == true) {
+                        exp = new True();
+                    }
+                    else if (exp instanceof Boolean && (boolean)exp == false) {
+                        exp = new False();
+                    }
+                    else if (exp instanceof Character) {
+                        exp = new LiteralCharacter((char)exp);
+                    }
+
+                    Attr a = new Attr(vs[i], (Expr)exp);
+                    a.accept(this);
+                }
+            }else{
+                throw new RuntimeException( " (" + e.text + ", at position " + e.offset  + ") Função não definida " +  e.getId());
+            }
+            
+        }catch(Exception x){
+            throw new RuntimeException( " (" + e.text + ", at position " + e.offset  + ") " + x.getMessage() );
+        }
+    }
 
     public  void visit(Plus e){
         try{
@@ -391,7 +510,7 @@ public class  InterpretVisitor extends Visitor {
     public void visit(Print e){
         try{
             e.getPrint().accept(this);
-            System.out.println(operands.pop().toString());
+            System.out.print(operands.pop().toString());
         }catch(Exception x){
             throw new RuntimeException( " (" + e.text + ", at position " + e.offset  + ") " + x.getMessage() );
         }
@@ -400,7 +519,38 @@ public class  InterpretVisitor extends Visitor {
     public void visit(Read e){
         try{
             LValue v = e.getRead();
-            System.out.println(operands.pop().toString());
+            Scanner sc = new Scanner(System.in);
+            String input = sc.next();
+            Object o;
+
+            if(v.getIdx() != null && v.getIdx().size() > 0 ){
+                Object r = env.peek().get(v.getName());
+
+                for(int k = 0; k < v.getIdx().size()-1; k++ ){
+                    o = v.getIdx().get(k);
+                    if (o instanceof Expr) {
+                        ((Expr)o).accept(this);
+                        r = ((ArrayList)r).get( (Integer)operands.pop());
+                    }
+                    else if (o instanceof String) {
+                        r = ((HashMap)r).get(o);
+                    }
+                }
+
+                o = v.getIdx().get(v.getIdx().size()-1);
+                if (o instanceof Expr) {
+                    ((Expr)v.getIdx().get(v.getIdx().size()-1)).accept(this);
+                    ((ArrayList)r).set( (Integer)operands.pop(), input);
+                }
+                else if (o instanceof String) {
+                    if (!((HashMap)r).containsKey(o)) {
+                        throw new RuntimeException( "Atributo " + o + " não declarado ");
+                    }
+                    ((HashMap)r).put(o, input);
+                }
+            }
+            else{ env.peek().put(v.getName(), input);}
+
         }catch(Exception x){
             throw new RuntimeException( " (" + e.text + ", at position " + e.offset  + ") " + x.getMessage() );
         }
@@ -422,7 +572,7 @@ public class  InterpretVisitor extends Visitor {
     public void visit(Iterate e){
         try{
             e.getE().accept(this);
-            float num = (float) operands.pop();
+            int num = (int) operands.pop();
             for (int i = 0; i < num; i++) {
                 e.getCmd().accept(this);
             }
@@ -443,9 +593,12 @@ public class  InterpretVisitor extends Visitor {
     } 
     
     public void visit(Return e){
+        int i = 0;
         for(Expr ex : e.getReturn()){
             ex.accept(this);
+            i++;
         }
+        operands.push(i);
         retMode = true;   
     }
     
@@ -459,90 +612,4 @@ public class  InterpretVisitor extends Visitor {
 
     public void visit(UserType t) { }
 
-    /**
-    
-    
-    // gcd (12,9)
-    //
-    // > 9
-    //   12
-    public  void visit(Call e){
-        try{
-            Func f = funcs.get(e.getName());
-            if(f != null){
-                    for(Expr exp : e.getArgs()){
-                        exp.accept(this);
-                    }
-                    f.accept(this);
-                
-            }else{
-                throw new RuntimeException( " (" + e.getLine() + ", " + e.getCol() + ") Função não definida " +  e.getName());
-            }
-            
-        }catch(Exception x){
-            throw new RuntimeException( " (" + e.getLine() + ", " + e.getCol() + ") " + x.getMessage() );
-        }
-        }
-    
-        public  void visit(Var e){ 
-            try{   
-                Object r = env.peek().get(e.getName());
-                if(r != null){   
-                if(e.getIdx() != null){
-                    for(Expr exp : e.getIdx()){
-                        exp.accept(this);
-                        r = ((ArrayList)r).get( (Integer)operands.pop());
-                    }
-                }
-                operands.push(r);
-                }
-                else{throw new RuntimeException( " (" + e.getLine() + ", " + e.getCol() + ") variável não declarada " +e.getName() );}
-            }catch(Exception x){
-                throw new RuntimeException( " (" + e.getLine() + ", " + e.getCol() + ") " + x.getMessage() );
-            }
-        }
-
-        
-        public  void visit(StmtList e){
-            if(retMode){ return;}
-            try{
-                e.getCmd1().accept(this);
-                if(retMode){ return;}
-                e.getCmd2().accept(this);
-            }catch(Exception x){
-                throw new RuntimeException( " (" + e.getLine() + ", " + e.getCol() + ") " + x.getMessage() );
-            }  
-        }
-
-        
-    public  void visit(Inst e){
-        try{   
-        Var v = e.getID();
-        e.getSize().accept(this);
-        Integer size = (Integer)operands.pop();
-        ArrayList val = new ArrayList(size);
-
-        for(int i = 0; i< size; i++){ val.add(null);    }
-        
-        if( env.peek().get(v.getName()) == null ){
-            env.peek().put(v.getName(), val);
-        }else if(  v.getIdx() != null && v.getIdx().length > 0 ){
-            ArrayList arr = (ArrayList)env.peek().get(v.getName());
-            for(int k = 0; k < v.getIdx().length-1; k++ ){
-                v.getIdx()[k].accept(this);
-                arr = (ArrayList)arr.get( (Integer)operands.pop());
-            }
-            v.getIdx()[v.getIdx().length-1 ].accept(this);
-            arr.set( (Integer)operands.pop(), val);
-        }
-        else{
-            env.peek().put(e.getID().getName(), val);
-        }
-        
-        }catch(Exception x){
-            throw new RuntimeException( " (" + e.getLine() + ", " + e.getCol() + ") " + x.getMessage() );
-        }
-    }
-
-    **/
 }

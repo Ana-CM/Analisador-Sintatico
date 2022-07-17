@@ -62,9 +62,8 @@ public static void main(String[] args){
             System.exit(1);
         }
         else if(args[0].equals("-i") ){
-            //iv = new InterpreterVisitor();
-            //result.accept(iv);
-            //((InterpreterVisitor)iv).printEnv();
+            InterpretVisitor iv = new InterpretVisitor();
+            result.accept(iv);
         }
         else if(args[0].equals("-gvz") ){
             GraphVisitor gv = new GraphVisitor();
