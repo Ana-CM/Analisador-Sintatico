@@ -109,15 +109,16 @@ public class AstActions implements Actions {
         return node;
     }
 
-    /**
+   /**
      * "'" ("\\n" / "\\r" / "\\t" / "\\b" /  "\\\\" / (.) ) "'" Spacing 
      */
     public LiteralCharacter MakeLiteralCharacter(String input, int start, int end, List<TreeNode> elements) {
         String s = elements.get(1).text;
+        LiteralCharacter node = null;
 
         switch(s) {
             case "\\n":
-                LiteralCharacter node = new LiteralCharacter('\n');
+                node = new LiteralCharacter('\n');
                 node.text = input.substring(start, end);
                 node.offset = start;
                 return node;
@@ -142,7 +143,7 @@ public class AstActions implements Actions {
                 node.offset = start;
                 return node;
             default:
-                node = new LiteralCharacter(s.charAt(1));
+                node = new LiteralCharacter(s.charAt(0));
                 node.text = input.substring(start, end);
                 node.offset = start;
                 return node;
@@ -659,4 +660,3 @@ public class AstActions implements Actions {
     }
 
 }
-
