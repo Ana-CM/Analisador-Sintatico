@@ -111,7 +111,7 @@ public class  InterpretVisitor extends Visitor {
             }
             else{throw new RuntimeException( " (" + e.text + ", at position " + e.offset  +") variável não declarada " + e.getName() );}
         } catch(Exception x){
-            throw new RuntimeException( " (" + e.text + ", at position " + e.offset  + ") " + x.getMessage() );
+            throw new RuntimeException( " (At position: " + e.offset + ", text: " + e.text  + ") " + x.getMessage() );
         }
     }
 
@@ -159,7 +159,7 @@ public class  InterpretVisitor extends Visitor {
             operands.push(val);
 
         }catch(Exception x){
-            throw new RuntimeException( " (" + e.text + ", at position " + e.offset  + ") " + x.getMessage() );
+            throw new RuntimeException( " (At position: " + e.offset + ", text: " + e.text  + ") " + x.getMessage() );
         }
     }
 
@@ -199,7 +199,7 @@ public class  InterpretVisitor extends Visitor {
             else{ env.peek().put(e.getLvalue().getName(), val);}
         
         }catch(Exception x){
-            throw new RuntimeException( " (" + e.text + ", at position " + e.offset  + ") " + x.getMessage() );
+            throw new RuntimeException( " (At position: " + e.offset + ", text: " + e.text  + ") " + x.getMessage() );
         }
     }
 
@@ -234,7 +234,7 @@ public class  InterpretVisitor extends Visitor {
             }
             
         }catch(Exception x){
-            throw new RuntimeException( " (" + e.text + ", at position " + e.offset  + ") " + x.getMessage() );
+            throw new RuntimeException( " (At position: " + e.offset + ", text: " + e.text  + ") " + x.getMessage() );
         }
     }
 
@@ -282,7 +282,7 @@ public class  InterpretVisitor extends Visitor {
             }
             
         }catch(Exception x){
-            throw new RuntimeException( " (" + e.text + ", at position " + e.offset  + ") " + x.getMessage() );
+            throw new RuntimeException( " (At position: " + e.offset + ", text: " + e.text  + ") " + x.getMessage() );
         }
     }
 
@@ -301,7 +301,7 @@ public class  InterpretVisitor extends Visitor {
                operands.push(esq.intValue() + dir.intValue());
             }
         }catch(Exception x){
-            throw new RuntimeException( " (" + e.text + ", at position " + e.offset  + ") " + x.getMessage() );
+            throw new RuntimeException( " (At position: " + e.offset + ", text: " + e.text  + ") " + x.getMessage() );
         }
     }
 
@@ -320,7 +320,7 @@ public class  InterpretVisitor extends Visitor {
                operands.push(esq.intValue() - dir.intValue());
             }
         }catch(Exception x){
-            throw new RuntimeException( " (" + e.text + ", at position " + e.offset  + ") " + x.getMessage() );
+            throw new RuntimeException( " (At position: " + e.offset + ", text: " + e.text  + ") " + x.getMessage() );
         }
     }
 
@@ -339,7 +339,7 @@ public class  InterpretVisitor extends Visitor {
                operands.push(esq.intValue() * dir.intValue());
             }
         }catch(Exception x){
-            throw new RuntimeException( " (" + e.text + ", at position " + e.offset  + ") " + x.getMessage() );
+            throw new RuntimeException( " (At position: " + e.offset + ", text: " + e.text  + ") " + x.getMessage() );
         }
     }
 
@@ -358,7 +358,7 @@ public class  InterpretVisitor extends Visitor {
                operands.push(esq.intValue() / dir.intValue());
             }
         }catch(Exception x){
-            throw new RuntimeException( " (" + e.text + ", at position " + e.offset  + ") " + x.getMessage() );
+            throw new RuntimeException( " (At position: " + e.offset + ", text: " + e.text  + ") " + x.getMessage() );
         }
     }
 
@@ -377,7 +377,7 @@ public class  InterpretVisitor extends Visitor {
                operands.push(esq.intValue() % dir.intValue());
             }
         }catch(Exception x){
-            throw new RuntimeException( " (" + e.text + ", at position " + e.offset  + ") " + x.getMessage() );
+            throw new RuntimeException( " (At position: " + e.offset + ", text: " + e.text  + ") " + x.getMessage() );
         }
     }
 
@@ -386,7 +386,7 @@ public class  InterpretVisitor extends Visitor {
             e.getExpr().accept(this);
             operands.push(operands.pop());
         }catch(Exception x){
-            throw new RuntimeException( " (" + e.text + ", at position " + e.offset  + ") " + x.getMessage() );
+            throw new RuntimeException( " (At position: " + e.offset + ", text: " + e.text  + ") " + x.getMessage() );
         }
     }
 
@@ -404,7 +404,7 @@ public class  InterpretVisitor extends Visitor {
             }
             
         }catch(Exception x){
-            throw new RuntimeException( " (" + e.text + ", at position " + e.offset  + ") " + x.getMessage() );
+            throw new RuntimeException( " (At position: " + e.offset + ", text: " + e.text  + ") " + x.getMessage() );
         }
     }
 
@@ -415,7 +415,7 @@ public class  InterpretVisitor extends Visitor {
             value = operands.pop();
             operands.push( ! (Boolean)value ); 
         }catch(Exception x){
-            throw new RuntimeException( " (" + e.text + ", at position " + e.offset  + ") " + x.getMessage() );
+            throw new RuntimeException( " (At position: " + e.offset + ", text: " + e.text  + ") " + x.getMessage() );
         }
     }
 
@@ -428,7 +428,7 @@ public class  InterpretVisitor extends Visitor {
             esq = operands.pop();
             operands.push( (Boolean)esq && (Boolean)dir ); 
         }catch(Exception x){
-            throw new RuntimeException( " (" + e.text + ", at position " + e.offset  + ") " + x.getMessage() );
+            throw new RuntimeException( " (At position: " + e.offset + ", text: " + e.text  + ") " + x.getMessage() );
         }
     }
 
@@ -446,7 +446,7 @@ public class  InterpretVisitor extends Visitor {
                operands.push(esq.intValue() < dir.intValue());
             }
         }catch(Exception x){
-            throw new RuntimeException( " (" + e.text + ", at position " + e.offset  + ") " + x.getMessage() );
+            throw new RuntimeException( " (At position: " + e.offset + ", text: " + e.text  + ") " + x.getMessage() );
         }
     }
 
@@ -456,7 +456,7 @@ public class  InterpretVisitor extends Visitor {
             e.getRight().accept(this);
             operands.push( operands.pop().equals(operands.pop()) );
         }catch(Exception x){
-            throw new RuntimeException( " (" + e.text + ", at position " + e.offset  + ") " + x.getMessage() );
+            throw new RuntimeException( " (At position: " + e.offset + ", text: " + e.text  + ") " + x.getMessage() );
         }
     }
 
@@ -466,7 +466,7 @@ public class  InterpretVisitor extends Visitor {
             e.getRight().accept(this);
             operands.push( !operands.pop().equals(operands.pop()) );
         }catch(Exception x){
-            throw new RuntimeException( " (" + e.text + ", at position " + e.offset  + ") " + x.getMessage() );
+            throw new RuntimeException( " (At position: " + e.offset + ", text: " + e.text  + ") " + x.getMessage() );
         }
     }
 
@@ -474,7 +474,7 @@ public class  InterpretVisitor extends Visitor {
         try{
             operands.push(true);
         }catch(Exception x){
-            throw new RuntimeException( " (" + e.text + ", at position " + e.offset  + ") " + x.getMessage() );
+            throw new RuntimeException( " (At position: " + e.offset + ", text: " + e.text  + ") " + x.getMessage() );
         }
     }
 
@@ -482,7 +482,7 @@ public class  InterpretVisitor extends Visitor {
         try{
             operands.push(false);
         }catch(Exception x){
-            throw new RuntimeException( " (" + e.text + ", at position " + e.offset  + ") " + x.getMessage() );
+            throw new RuntimeException( " (At position: " + e.offset + ", text: " + e.text  + ") " + x.getMessage() );
         }
     }
 
@@ -490,7 +490,7 @@ public class  InterpretVisitor extends Visitor {
         try{   
             operands.push( e.getNumber_integer() );
         }catch(Exception x){
-            throw new RuntimeException( " (" + e.text + ", at position " + e.offset  + ") " + x.getMessage() );
+            throw new RuntimeException( " (At position: " + e.offset + ", text: " + e.text  + ") " + x.getMessage() );
         }
     }
     
@@ -498,7 +498,7 @@ public class  InterpretVisitor extends Visitor {
         try{   
             operands.push( e.getDecimal() );
         }catch(Exception x){
-            throw new RuntimeException( " (" + e.text + ", at position " + e.offset  + ") " + x.getMessage() );
+            throw new RuntimeException( " (At position: " + e.offset + ", text: " + e.text  + ") " + x.getMessage() );
         }
     }
 
@@ -506,7 +506,7 @@ public class  InterpretVisitor extends Visitor {
         try{   
             operands.push( e.getLiteralCharacter() );
         }catch(Exception x){
-            throw new RuntimeException( " (" + e.text + ", at position " + e.offset  + ") " + x.getMessage() );
+            throw new RuntimeException( " (At position: " + e.offset + ", text: " + e.text  + ") " + x.getMessage() );
         }
     }
     
@@ -514,7 +514,7 @@ public class  InterpretVisitor extends Visitor {
         try{   
             operands.push( e.getValue() );
         }catch(Exception x){
-            throw new RuntimeException( " (" + e.text + ", at position " + e.offset  + ") " + x.getMessage() );
+            throw new RuntimeException( " (At position: " + e.offset + ", text: " + e.text  + ") " + x.getMessage() );
         }
     }
 
@@ -523,7 +523,7 @@ public class  InterpretVisitor extends Visitor {
             e.getPrint().accept(this);
             System.out.print(operands.pop().toString());
         }catch(Exception x){
-            throw new RuntimeException( " (" + e.text + ", at position " + e.offset  + ") " + x.getMessage() );
+            throw new RuntimeException( " (At position: " + e.offset + ", text: " + e.text  + ") " + x.getMessage() );
         }
     }
 
@@ -563,7 +563,7 @@ public class  InterpretVisitor extends Visitor {
             else{ env.peek().put(v.getName(), input);}
 
         }catch(Exception x){
-            throw new RuntimeException( " (" + e.text + ", at position " + e.offset  + ") " + x.getMessage() );
+            throw new RuntimeException( " (At position: " + e.offset + ", text: " + e.text  + ") " + x.getMessage() );
         }
     }
 
@@ -576,7 +576,7 @@ public class  InterpretVisitor extends Visitor {
                 e.getElseCmd().accept(this);
             }
         }catch(Exception x){
-            throw new RuntimeException( " (" + e.text + ", at position " + e.offset  + ") " + x.getMessage() );
+            throw new RuntimeException( " (At position: " + e.offset + ", text: " + e.text  + ") " + x.getMessage() );
         }
     }
 
@@ -588,7 +588,7 @@ public class  InterpretVisitor extends Visitor {
                 e.getCmd().accept(this);
             }
         }catch(Exception x){
-            throw new RuntimeException( " (" + e.text + ", at position " + e.offset  + ") " + x.getMessage() );
+            throw new RuntimeException( " (At position: " + e.offset + ", text: " + e.text  + ") " + x.getMessage() );
         }
     }
 
@@ -599,7 +599,7 @@ public class  InterpretVisitor extends Visitor {
                 c.accept(this);
             }
         }catch(Exception x){
-            throw new RuntimeException( " (" + e.text + ", at position " + e.offset  + ") " + x.getMessage() );
+            throw new RuntimeException( " (At position: " + e.offset + ", text: " + e.text  + ") " + x.getMessage() );
         }
     } 
     

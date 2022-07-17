@@ -50,7 +50,10 @@ public class AstActions implements Actions {
             }
         }
         
-        return new LValue(name, idx);
+        LValue node = new LValue(name, idx);
+        node.text = input.substring(start, end);
+        node.offset = start;
+        return node;
     }
 
     /**
@@ -58,8 +61,10 @@ public class AstActions implements Actions {
      */
     public ParExp MakeParExp(String input, int start, int end, List<TreeNode> elements) {
         Expr expr = (Expr)elements.get(1);
-        return new ParExp(expr);
-
+        ParExp node = new ParExp(expr);
+        node.text = input.substring(start, end);
+        node.offset = start;
+        return node;
     } 
 
     /**
@@ -82,7 +87,10 @@ public class AstActions implements Actions {
             }
         }
 
-        return new CallBrack(id, params, exp);
+        CallBrack node = new CallBrack(id, params, exp);
+        node.text = input.substring(start, end);
+        node.offset = start;
+        return node;
     }
 
     /**
@@ -94,7 +102,11 @@ public class AstActions implements Actions {
         if(elements.get(2).elements.size() > 1){
             exp = (Expr) elements.get(2).get(Label.Exp);
         }
-        return new New(type, exp);
+
+        New node = new New(type, exp);
+        node.text = input.substring(start, end);
+        node.offset = start;
+        return node;
     }
 
     /**
@@ -105,17 +117,35 @@ public class AstActions implements Actions {
 
         switch(s) {
             case "\\n":
-                return new LiteralCharacter('\n');
+                LiteralCharacter node = new LiteralCharacter('\n');
+                node.text = input.substring(start, end);
+                node.offset = start;
+                return node;
             case "\\r":
-                return new LiteralCharacter('\r');
+                node = new LiteralCharacter('\r');
+                node.text = input.substring(start, end);
+                node.offset = start;
+                return node;
             case "\\t":
-                return new LiteralCharacter('\t');
+                node = new LiteralCharacter('\t');
+                node.text = input.substring(start, end);
+                node.offset = start;
+                return node;
             case "\\b":
-                return new LiteralCharacter('\b');
+                node = new LiteralCharacter('\b');
+                node.text = input.substring(start, end);
+                node.offset = start;
+                return node;
             case "\\\\":
-                return new LiteralCharacter('\\');
+                node = new LiteralCharacter('\\');
+                node.text = input.substring(start, end);
+                node.offset = start;
+                return node;
             default:
-                return new LiteralCharacter(s.charAt(0));
+                node = new LiteralCharacter(s.charAt(1));
+                node.text = input.substring(start, end);
+                node.offset = start;
+                return node;
         }
     }
     
@@ -124,7 +154,10 @@ public class AstActions implements Actions {
      */
     public NumberInteger MakeInteger (String input, int start, int end, List<TreeNode> elements) {
         int integer = Integer.parseInt(elements.get(0).text);
-        return new NumberInteger(integer);
+        NumberInteger node = new NumberInteger(integer);
+        node.text = input.substring(start, end);
+        node.offset = start;
+        return node;
     }
 
     /**
@@ -132,28 +165,40 @@ public class AstActions implements Actions {
      */
     public NumberDecimal MakeDecimal (String input, int start, int end, List<TreeNode> elements) {
         float decimal = Float.parseFloat(elements.get(0).text);
-        return new NumberDecimal(decimal);
+        NumberDecimal node = new NumberDecimal(decimal);
+        node.text = input.substring(start, end);
+        node.offset = start;
+        return node;
     }
 
     /**
      * Null
      */
     public Null MakeNull (String input, int start, int end, List<TreeNode> elements) {
-        return new Null();
+        Null node = new Null();
+        node.text = input.substring(start, end);
+        node.offset = start;
+        return node;
     }
 
     /**
      * False
      */
     public False MakeFalse (String input, int start, int end, List<TreeNode> elements) {
-        return new False();
+        False node = new False();
+        node.text = input.substring(start, end);
+        node.offset = start;
+        return node;
     }
 
     /**
      * True
      */
     public True MakeTrue (String input, int start, int end, List<TreeNode> elements) {
-        return new True();
+        True node = new True();
+        node.text = input.substring(start, end);
+        node.offset = start;
+        return node;
     }
 
     /**
@@ -161,7 +206,10 @@ public class AstActions implements Actions {
      */
     public Negative MakeNegative (String input, int start, int end, List<TreeNode> elements) {
         Expr exp = (Expr)elements.get(1);
-        return new Negative(exp);
+        Negative node = new Negative(exp);
+        node.text = input.substring(start, end);
+        node.offset = start;
+        return node;
     }
 
     /**
@@ -169,7 +217,10 @@ public class AstActions implements Actions {
      */
     public Not MakeNot (String input, int start, int end, List<TreeNode> elements) {
         Expr exp = (Expr)elements.get(1);
-        return new Not(exp);
+        Not node = new Not(exp);
+        node.text = input.substring(start, end);
+        node.offset = start;
+        return node;
     }
     
     /**
@@ -203,8 +254,10 @@ public class AstActions implements Actions {
             }
         }
 
-    
-        return new CallAttr(id, params, lvalues);
+        CallAttr node = new CallAttr(id, params, lvalues);
+        node.text = input.substring(start, end);
+        node.offset = start;
+        return node;
     }
 
     /**
@@ -213,7 +266,10 @@ public class AstActions implements Actions {
     public Attr MakeAttr (String input, int start, int end, List<TreeNode> elements) {
         LValue lvalue = (LValue)elements.get(0);
         Expr exp = (Expr)elements.get(2);
-        return new Attr(lvalue, exp);
+        Attr node = new Attr(lvalue, exp);
+        node.text = input.substring(start, end);
+        node.offset = start;
+        return node;
     }
 
     /**
@@ -232,7 +288,10 @@ public class AstActions implements Actions {
             i++;
         }
 
-        return new Return(exp);
+        Return node = new Return(exp);
+        node.text = input.substring(start, end);
+        node.offset = start;
+        return node;
     }
 
     /**
@@ -240,7 +299,10 @@ public class AstActions implements Actions {
      */
     public Print MakePrint (String input, int start, int end, List<TreeNode> elements) {
         Expr exp = (Expr) elements.get(1);
-        return new Print(exp);
+        Print node = new Print(exp);
+        node.text = input.substring(start, end);
+        node.offset = start;
+        return node;
     }
     
     /**
@@ -248,7 +310,10 @@ public class AstActions implements Actions {
      */
     public Read MakeRead (String input, int start, int end, List<TreeNode> elements) {
         LValue lvalue = (LValue) elements.get(1);
-        return new Read(lvalue);
+        Read node = new Read(lvalue);
+        node.text = input.substring(start, end);
+        node.offset = start;
+        return node;
     }
 
     /**
@@ -257,7 +322,10 @@ public class AstActions implements Actions {
     public Iterate MakeIterate (String input, int start, int end, List<TreeNode> elements) {
         Expr exp = (Expr) elements.get(2);
         Cmd cmd = (Cmd) elements.get(4);
-        return new Iterate(exp, cmd);
+        Iterate node = new Iterate(exp, cmd);
+        node.text = input.substring(start, end);
+        node.offset = start;
+        return node;
     }
 
     /**
@@ -270,42 +338,61 @@ public class AstActions implements Actions {
         if ( null != elements.get(5).get(Label.Cmd) ) {
             elseCmd = (Cmd) elements.get(5).get(Label.Cmd);
         }
-        return new If(exp, cmd, elseCmd);
+        If node = new If(exp, cmd, elseCmd);
+        node.text = input.substring(start, end);
+        node.offset = start;
+        return node;
     }
     
     /**
      * ([A-Z] ([a-z] / [0-9] / "_" / [A-Z])*) Spacing
      */
     public UserType MakeUserType (String input, int start, int end, List<TreeNode> elements) {
-        return new UserType(elements.get(0).text);
+        String id = elements.get(0).text;
+        UserType node = new UserType(id);
+        node.text = input.substring(start, end);
+        node.offset = start;
+        return node;
     }
 
     /**
      * Float
      */
     public TyFloat MakeTyFloat (String input, int start, int end, List<TreeNode> elements) {
-        return new TyFloat();
+        TyFloat node = new TyFloat();
+        node.text = input.substring(start, end);
+        node.offset = start;
+        return node;
     }
 
     /**
      * Bool
      */
     public TyBool MakeTyBool (String input, int start, int end, List<TreeNode> elements) {
-        return new TyBool();
+        TyBool node = new TyBool();
+        node.text = input.substring(start, end);
+        node.offset = start;
+        return node;
     }
 
     /**
      * Char
      */
     public TyChar MakeTyChar (String input, int start, int end, List<TreeNode> elements) {
-        return new TyChar();
+        TyChar node = new TyChar();
+        node.text = input.substring(start, end);
+        node.offset = start;
+        return node;
     }
 
     /**
      * Int
      */
     public TyInt MakeTyInt (String input, int start, int end, List<TreeNode> elements) {
-        return new TyInt();
+        TyInt node = new TyInt();
+        node.text = input.substring(start, end);
+        node.offset = start;
+        return node;
     }
 
     /**
@@ -315,7 +402,10 @@ public class AstActions implements Actions {
         BType btype = (BType) elements.get(0);
         int dim = elements.get(1).elements.size();
         
-        return new Type(btype, dim);
+        Type node = new Type(btype, dim);
+        node.text = input.substring(start, end);
+        node.offset = start;
+        return node;
     }
 
     /**
@@ -338,7 +428,10 @@ public class AstActions implements Actions {
             p.add(pair);
         }
 
-        return new Params(p);
+        Params node = new Params(p);
+        node.text = input.substring(start, end);
+        node.offset = start;
+        return node;
     }
 
     /**
@@ -370,7 +463,10 @@ public class AstActions implements Actions {
 
         }
 
-        return new Func(id, params, type, cmd);
+        Func node = new Func(id, params, type, cmd);
+        node.text = input.substring(start, end);
+        node.offset = start;
+        return node;
     }
 
     /*
@@ -379,7 +475,11 @@ public class AstActions implements Actions {
     public Decl MakeDecl (String input, int start, int end, List<TreeNode> elements) {
         String id = elements.get(0).elements.get(0).text;
         Type type = (Type) elements.get(2);
-        return new Decl(id, type);
+        
+        Decl node = new Decl(id, type);
+        node.text = input.substring(start, end);
+        node.offset = start;
+        return node;
     }
 
     /**
@@ -392,8 +492,11 @@ public class AstActions implements Actions {
         for (int i = 0; i < declarations.length; i++) {
             declarations[i] = (Decl) elements.get(3).elements.get(i);
         }
-
-        return new Definition(type, declarations);
+        
+        Definition node = new Definition(type, declarations);
+        node.text = input.substring(start, end);
+        node.offset = start;
+        return node;
     } 
 
     /**
@@ -416,8 +519,10 @@ public class AstActions implements Actions {
             funcs[i] = (Func) elements.get(2).elements.get(i);
         }
 
-        
-        return new Prog(defs, funcs);
+        Prog node = new Prog(defs, funcs);
+        node.text = input.substring(start, end);
+        node.offset = start;
+        return node;
     }
 
     /**
@@ -428,7 +533,11 @@ public class AstActions implements Actions {
         for (int i = 0; i < cmds.length; i++) {
             cmds[i] = (Cmd) elements.get(1).elements.get(i);
         }
-        return new CmdBrace(cmds);
+        
+        CmdBrace node = new CmdBrace(cmds);
+        node.text = input.substring(start, end);
+        node.offset = start;
+        return node;
     }
 
     /**
@@ -455,6 +564,8 @@ public class AstActions implements Actions {
                 l = (Expr) (new Mod(l, r));
         }
 
+        l.offset = start;
+        l.text = input.substring(start, end);
         return l;
     }
 
@@ -480,6 +591,8 @@ public class AstActions implements Actions {
             }
         }
 
+        l.offset = start;
+        l.text = input.substring(start, end);
         return l;
     }
 
@@ -503,7 +616,9 @@ public class AstActions implements Actions {
             else if (operator.contains("!="))
                 l = (Expr) (new Dif(l, r));
         }
-
+        
+        l.offset = start;
+        l.text = input.substring(start, end);
         return l;
     }
 
@@ -513,7 +628,11 @@ public class AstActions implements Actions {
     public Expr MakeLt (String input, int start, int end, List<TreeNode> elements) {
         Expr left = (Expr)elements.get(0);
         Expr right = (Expr)elements.get(2);
-        return (Expr) (new Lt(left, right));
+        
+        Expr node = (Expr)(new Lt(left, right));
+        node.text = input.substring(start, end);
+        node.offset = start;
+        return node;
     }
     
     /**
@@ -534,6 +653,8 @@ public class AstActions implements Actions {
                 l = (Expr) (new And(l, r));
         }
 
+        l.offset = start;
+        l.text = input.substring(start, end);
         return l;
     }
 
