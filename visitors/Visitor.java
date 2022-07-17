@@ -13,49 +13,49 @@ import ast.expr.binop.*;
 
 public abstract class Visitor {
 
-    public abstract void visit(Prog p); //V
-    public abstract void visit(Definition e); //V
-    public abstract void visit(Decl e); //V
-    public abstract void visit(Params e); //V
-    public abstract void visit(Type e); //V
+    public abstract void visit(Prog p); //r
+    public abstract void visit(Definition e); 
+    public abstract void visit(Decl e);
+    public abstract void visit(Func f); //r
+    public abstract void visit(Params e);   //v
+    public abstract void visit(Type e); //v
     
-    public abstract void visit(Plus e); //V
-    public abstract void visit(Minus e); //V
-    public abstract void visit(Times e); //V
-    public abstract void visit(Div e); //V
-    public abstract void visit(Mod e); //V
-    public abstract void visit(Negative e); //V
+    public abstract void visit(Plus e);  //v
+    public abstract void visit(Minus e);  //v
+    public abstract void visit(Times e); //v
+    public abstract void visit(Div e); //v
+    public abstract void visit(Mod e); //v
+    public abstract void visit(Negative e); //v
     
-    public abstract void visit(And e); //V
-    public abstract void visit(Lt e); //V
-    public abstract void visit(Eq e); //V
-    public abstract void visit(Dif e); //V
+    public abstract void visit(And e); //v
+    public abstract void visit(Lt e); //v
+    public abstract void visit(Eq e); //v
+    public abstract void visit(Dif e); //v
     public abstract void visit(Not e); //v
     
-    public abstract void visit(True e); //V
-    public abstract void visit(False e); //V
-    public abstract void visit(NumberInteger e); //V
-    public abstract void visit(NumberDecimal e); //V
-    public abstract void visit(LiteralCharacter e); //V
-    public abstract void visit(LValue e); //V
-    public abstract void visit(CallBrack e); //V
-    public abstract void visit(Null e); //V
-    public abstract void visit(New e); //V
-    public abstract void visit(ParExp e); //V
+    public abstract void visit(True e); //v
+    public abstract void visit(False e); //v
+    public abstract void visit(NumberInteger e); //v
+    public abstract void visit(NumberDecimal e); //v
+    public abstract void visit(LiteralCharacter e); //v
+    public abstract void visit(LValue e); //v
+    public abstract void visit(CallBrack e); 
+    public abstract void visit(Null e); //v
+    public abstract void visit(New e); 
+    public abstract void visit(ParExp e); //v
     
-    public abstract void visit(Attr e); //V
-    public abstract void visit(If e); //V
-    public abstract void visit(Iterate e);
-    public abstract void visit(Print e); //V
-    public abstract void visit(Read e); //V
-    public abstract void visit(CmdBrace e); //V
-    public abstract void visit(Func f); //V
-    public abstract void visit(CallAttr e); //V
-    public abstract void visit(Return e); //V
+    public abstract void visit(Attr e); //r
+    public abstract void visit(If e); //v
+    public abstract void visit(Iterate e); //v
+    public abstract void visit(Print e); //v
+    public abstract void visit(Read e); 
+    public abstract void visit(CmdBrace e); //v
+    public abstract void visit(CallAttr e); 
+    public abstract void visit(Return e); //v
     
-    public abstract void visit(TyInt t); //V
-    public abstract void visit(TyFloat t); //V
-    public abstract void visit(TyChar t); //V
-    public abstract void visit(TyBool t); //V
-    public abstract void visit(UserType t); //V
+    public abstract void visit(TyInt t);  //v
+    public abstract void visit(TyFloat t); //v
+    public abstract void visit(TyChar t); //v
+    public abstract void visit(TyBool t); //v
+    public abstract void visit(UserType t); //v
 }
