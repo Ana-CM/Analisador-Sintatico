@@ -430,10 +430,15 @@ public class  InterpretVisitor extends Visitor {
         try{   
             e.getLeft().accept(this);
             e.getRight().accept(this);
-            Object esq,dir;
-            dir = operands.pop();
-            esq = operands.pop();
-            operands.push( (Float)esq < (Float)dir ); 
+            Number esq,dir;
+            dir = (Number)operands.pop();
+            esq = (Number)operands.pop(); 
+            if(esq instanceof Float || dir instanceof Float){
+                operands.push(esq.floatValue() < dir.floatValue());
+            }
+            else {
+               operands.push(esq.intValue() < dir.intValue());
+            }
         }catch(Exception x){
             throw new RuntimeException( " (" + e.text + ", at position " + e.offset  + ") " + x.getMessage() );
         }
