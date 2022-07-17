@@ -31,7 +31,7 @@ bash build-parser.sh
 
 ## Testes
 
-Existem três funcionalidades implementadas. O usuário pode executar um bateria de testes sintáticos, fazer a interpretação de um arquivo em específico e gerar um arquivo .graphviz para visualizar a AST de um arquivo em específico. 
+Existem três funcionalidades implementadas. O usuário pode executar uma bateria de testes sintáticos, fazer a interpretação de um arquivo em específico ou gerar um arquivo .graphviz para visualizar a AST de um arquivo em específico. 
 
 Para realizar a bateria de testes:
 
