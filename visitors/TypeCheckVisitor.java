@@ -27,6 +27,7 @@ public class TypeCheckVisitor extends Visitor {
     private STyBool tybool = STyBool.newSTyBool();
     private STyChar tychar = STyChar.newSTyChar();
     private STyNull tynull = STyNull.newSTyNull();
+    private STyGeneric tygeneric = STyGeneric.newSTyGeneric();
 
     private ArrayList<String> logError;
 
@@ -58,21 +59,23 @@ public class TypeCheckVisitor extends Visitor {
     // Adicionar checagem de tipos de usuário
     public void visit(Prog p) {
 
-        for (Definition d : p.getDefs()) {
-            String name = ((UserType) d.getType().getType()).getName();
+        if (null != p.getDefs()) {
+            for (Definition d : p.getDefs()) {
+                String name = ((UserType) d.getType().getType()).getName();
 
-            if(!data.containsKey(name)) {
-                HashMap<String,SType> decls = new HashMap<String,SType>();
-                for (Decl decl : d.getDeclarations()) {
-                    decl.getType().accept(this);
-                    decls.put(decl.getId(), stk.pop());
+                if(!data.containsKey(name)) {
+                    HashMap<String,SType> decls = new HashMap<String,SType>();
+                    for (Decl decl : d.getDeclarations()) {
+                        decl.getType().accept(this);
+                        decls.put(decl.getId(), stk.pop());
+                    }
+
+                    data.put(name, new STyUserType(name, decls));
                 }
-
-                data.put(name, new STyUserType(name, decls));
+                else {
+                    logError.add( "(" + d.text + ", at position " + d.offset  +") Duas ou mais definições de tipo com o mesmo identificador.");
+                }      
             }
-            else {
-                logError.add( "(" + d.text + ", at position " + d.offset  +") Duas ou mais definições de tipo com o mesmo identificador.");
-            }      
         }
 
         Boolean main = false;
@@ -86,20 +89,39 @@ public class TypeCheckVisitor extends Visitor {
             }
 
             STyFun ty;
-            SType[] xs = new SType[f.getParams().getP().size() + f.getType().length];
             
-            for(int i = 0; i < f.getParams().getP().size(); i++ ){
-                f.getParams().getP().get(i).getValue().accept(this);
-                xs[i] = stk.pop();
+            int numParams;
+            if (f.getParams() != null) 
+                numParams = f.getParams().getP().size();
+            else
+                numParams = 0;
+
+            int numReturns;
+            if (f.getType() != null) 
+                numReturns = f.getType().length;
+            else
+                numReturns = 0;
+
+            SType[] xs = new SType[numParams + numReturns];
+            
+            int i = 0;
+
+            if (f.getParams() != null) {
+                for(i = 0; i < f.getParams().getP().size(); i++ ){
+                    f.getParams().getP().get(i).getValue().accept(this);
+                    xs[i] = stk.pop();
+                }
             }
 
-            for (Type t : f.getType())
-                t.accept(this);
+            if (f.getType() != null) {
+                for (Type t : f.getType()) {
+                    t.accept(this);
+                    xs[i] = stk.pop();
+                    i++;
+                }
+            }
 
-            for (int i = 0; i < f.getType().length; i++)
-                xs[f.getParams().getP().size() + i] = stk.pop();
-
-            ty = new STyFun(xs);
+            ty = new STyFun(xs, numReturns);
             env.set(f.getId(), new LocalEnv<SType>(f.getId(),ty));
         }
 
@@ -119,9 +141,12 @@ public class TypeCheckVisitor extends Visitor {
     public void visit(Func f){
         retChk = false;
         temp = env.get(f.getId());
-        for(Entry<String, Type> p:  f.getParams().getP() ){
-            p.getValue().accept(this); 
-            temp.set( p.getKey(), stk.pop());
+
+        if (f.getParams() != null) {
+            for(Entry<String, Type> p:  f.getParams().getP() ){
+                p.getValue().accept(this); 
+                temp.set( p.getKey(), stk.pop());
+            }
         }
         
         for (Cmd c : f.getCmd())
@@ -320,8 +345,11 @@ public class TypeCheckVisitor extends Visitor {
         }
 
         if(temp.getFuncType() instanceof STyFun){
-             SType[] t = ((STyFun)temp.getFuncType()).getTypes();
-             t[t.length-1].match(stk.pop());
+            SType[] t = ((STyFun)temp.getFuncType()).getTypes();
+            int numReturns = ((STyFun)temp.getFuncType()).getNumReturns();
+            for (int i = 0; i < numReturns ; i++) {
+                t[t.length - 1 - i].match(stk.pop());
+            }
         }else{
            stk.pop().match(temp.getFuncType());
         }
@@ -452,31 +480,6 @@ public class TypeCheckVisitor extends Visitor {
         }
     }
 
-    public void visit(CallBrack e) {
-        LocalEnv<SType> le = env.get(e.getName());
-        if(le != null){
-            STyFun tf = (STyFun)le.getFuncType();
-            if(e.getArgs().length == tf.getTypes().length -1){     
-                int k = 0;
-                boolean r = true;
-                for(Expr x: e.getArgs() ){
-                    x.accept(this);
-                    if(!tf.getTypes()[k].match(stk.pop())){
-                        logError.add( x.getLine() + ", " + x.getCol() + ": " + (k+1) + "\u00BA argumento incompatível com o respectivo parâmetro de " + e.getName() );
-                    }
-                    k++;
-                }
-                stk.push(tf.getTypes()[tf.getTypes().length-1]);
-            }else{
-                logError.add( e.getLine() + ", " + e.getCol() + ": Chamada de função a função " + e.getName() + " incompatível com argumentos. " );
-                stk.push(tyerr);
-            }
-        }else{
-            logError.add( e.getLine() + ", " + e.getCol() + ": Chamada a função não declarada: " + e.getName() );
-            stk.push(tyerr);
-        }
-    }
-
     public void visit(New e) {
         if (e.getExp() != null) {
             e.getExp().accept(this);
@@ -490,5 +493,75 @@ public class TypeCheckVisitor extends Visitor {
             stk.push(stk.pop());
         }
     }
+    
+    public void visit(CallBrack e) {
+        LocalEnv<SType> le = env.get(e.getId());
+        if (le != null) {
+            STyFun tf = (STyFun)le.getFuncType();
+            if(e.getParams().length == tf.getTypes().length - tf.getNumReturns()) {     
+                int k = 0;
+                boolean r = true;
+                for(Expr x: e.getParams() ){
+                    x.accept(this);
+                    if(!tf.getTypes()[k].match(stk.pop())){
+                        logError.add( "(" + x.text + ", at position " + x.offset  +"): " + (k+1) + "\u00BA argumento incompatível com o respectivo parâmetro de " + e.getId() );
+                    }
+                    k++;
+                }
 
+                e.getExp().accept(this);
+                if (stk.pop().match(tyint)) {
+                    stk.push(tygeneric);
+                } else{
+                    logError.add("(" + e.text + ", at position " + e.offset  +") Chamada da função " + e.getId() + " tem expressão inválida " );
+                    stk.push(tyerr);
+                }
+                
+            } else {
+                logError.add("(" + e.text + ", at position " + e.offset  +") Chamada da função " + e.getId() + " incompatível com argumentos. " );
+                stk.push(tyerr);
+            }
+        }else{
+            logError.add("(" + e.text + ", at position " + e.offset  +") Chamada a função não declarada: " + e.getId() );
+            stk.push(tyerr);
+        }
+    }
+
+    public void visit(CallAttr e) {
+        LocalEnv<SType> le = env.get(e.getId());
+        if (le != null) {
+            STyFun tf = (STyFun)le.getFuncType();
+            if(e.getParams().length == tf.getTypes().length - tf.getNumReturns()) {     
+                int k = 0;
+                boolean r = true;
+                for(Expr x: e.getParams() ){
+                    x.accept(this);
+                    if(!tf.getTypes()[k].match(stk.pop())){
+                        logError.add( "(" + x.text + ", at position " + x.offset  +"): " + (k+1) + "\u00BA argumento incompatível com o respectivo parâmetro de " + e.getId() );
+                    }
+                    k++;
+                }
+                k = 0;
+                if (e.getLvalue().length == tf.getNumReturns()) {
+                    int numParams = tf.getTypes().length - tf.getNumReturns();
+                    for (LValue v : e.getLvalue()) {
+                        v.accept(this);
+                        if(!tf.getTypes()[k + numParams].match(stk.pop())){
+                            logError.add( "(" + v.text + ", at position " + v.offset  +"): " + (k+1) + "\u00BA variavel incompatível com o respectivo retorno de " + e.getId() );
+                        }
+                        k++;
+                    }
+                } else {
+                    logError.add("(" + e.text + ", at position " + e.offset  +") Chamada da função " + e.getId() + " tem número de retornos invalido" );
+                }
+                
+            } else {
+                logError.add("(" + e.text + ", at position " + e.offset  +") Chamada da função " + e.getId() + " incompatível com argumentos. " );
+                stk.push(tyerr);
+            }
+        }else{
+            logError.add("(" + e.text + ", at position " + e.offset  +") Chamada a função não declarada: " + e.getId() );
+            stk.push(tyerr);
+        }
+    }
 }

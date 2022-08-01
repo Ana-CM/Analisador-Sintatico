@@ -23,7 +23,7 @@ sudo apt install npm
 npm install -g canopy
 ```
 
-e, após disso, executar o comando:
+e, após isso, executar o comando:
 
 ```
 bash build-parser.sh
@@ -31,7 +31,7 @@ bash build-parser.sh
 
 ## Execução
 
-Existem três funcionalidades implementadas. O usuário pode executar uma bateria de testes sintáticos, fazer a interpretação de um arquivo em específico ou gerar um arquivo .graphviz para visualizar a AST de um arquivo em específico. 
+Existem quatro funcionalidades implementadas. O usuário pode executar uma bateria de testes sintáticos, fazer a interpretação de um arquivo em específico, gerar uma arquivo .graphviz para visualizar a AST de um arquivo em específico ou fazer a análise semântica de um arquivo em específico. 
 
 Para realizar a bateria de testes:
 
@@ -49,4 +49,10 @@ Para gerar o arquivo .graphviz:
 
 ```
 java LangCompiler -gvz [caminho_do_arquivo]
+```
+
+Para fazer a análise semântica:
+
+```
+java LangCompiler -tp [caminho_do_arquivo]
 ```

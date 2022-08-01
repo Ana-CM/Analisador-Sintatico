@@ -24,7 +24,7 @@ public class STyUserType extends SType {
     }
         
     public boolean match(SType v){
-        return (v instanceof STyErr) || ((v instanceof STyUserType) && ((STyUserType)v).name == name);
+        return (v instanceof STyGeneric) || (v instanceof STyErr) || ((v instanceof STyUserType) && ((STyUserType)v).name == name);
     }
     
     public String toString(){

@@ -17,7 +17,7 @@ public class STyArr extends SType {
     }
         
     public boolean match(SType v){
-        return (v instanceof STyErr) || (v instanceof STyArr) && (a.match( ((STyArr)v).getArg() ) );
+        return (v instanceof STyGeneric)|| (v instanceof STyErr) || (v instanceof STyArr) && (a.match( ((STyArr)v).getArg() ) );
     }
     
     public String toString(){

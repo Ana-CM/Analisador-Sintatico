@@ -16,7 +16,7 @@ public class STyNull extends SType {
      }
      
      public boolean match(SType v){
-          return (v instanceof STyErr) || (v instanceof STyNull);
+          return (v instanceof STyErr) || (v instanceof STyNull) || (v instanceof STyGeneric);
      }
      
      public String toString(){

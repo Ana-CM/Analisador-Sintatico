@@ -75,8 +75,13 @@ public static void main(String[] args){
             // result.accept(iv);
         }
         else if(args[0].equals("-tp") ){
-            //iv = new TypeChecker();
-            //result.accept(iv);
+            TypeCheckVisitor iv = new TypeCheckVisitor();
+            result.accept(iv);
+            if(iv.getNumErrors() > 0){
+                iv.printErrors();
+            }else{
+                System.out.println("typing  ... [ ok ]"); 
+            }
         }
         else if(args[0].equals("-pp") ){
             // iv = new PPrint();

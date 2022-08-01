@@ -16,7 +16,7 @@ public class STyChar extends SType {
      }
      
      public boolean match(SType v){
-          return (v instanceof STyErr) || (v instanceof STyChar);
+          return (v instanceof STyErr) || (v instanceof STyChar) || (v instanceof STyGeneric);
      }
      
      public String toString(){

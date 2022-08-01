@@ -7,13 +7,19 @@ package langUtil;
 public class STyFun extends SType {
      
     private SType ty[];
+    private int numReturns;
     
-    public STyFun(SType t[]){
+    public STyFun(SType t[], int numReturns){
         ty = t;
+        this.numReturns = numReturns;
     }
     
     public SType[] getTypes(){
         return ty;
+    }
+
+    public int getNumReturns() {
+        return numReturns;
     }
     
     public boolean match(SType v){

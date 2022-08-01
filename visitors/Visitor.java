@@ -39,7 +39,7 @@ public abstract class Visitor {
     public abstract void visit(NumberDecimal e); //
     public abstract void visit(LiteralCharacter e); //
     public abstract void visit(LValue e); // 
-    public abstract void visit(CallBrack e); 
+    public abstract void visit(CallBrack e); //
     public abstract void visit(Null e); //
     public abstract void visit(New e); //
     public abstract void visit(ParExp e); //
@@ -51,7 +51,7 @@ public abstract class Visitor {
     public abstract void visit(Read e); //
     public abstract void visit(CmdBrace e); //
     public abstract void visit(CallAttr e); 
-    public abstract void visit(Return e); // +/-
+    public abstract void visit(Return e); // 
     
     public abstract void visit(TyInt t); //
     public abstract void visit(TyFloat t); //
