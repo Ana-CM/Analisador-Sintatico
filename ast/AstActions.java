@@ -34,8 +34,6 @@ public class AstActions implements Actions {
         String name = elements.get(0).elements.get(0).text;
         
         List<Object> idx = null;
-        
-
         idx = new ArrayList <Object>();
 
         for (TreeNode e : elements.get(1)) {

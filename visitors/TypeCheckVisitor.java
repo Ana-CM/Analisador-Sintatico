@@ -81,10 +81,10 @@ public class TypeCheckVisitor extends Visitor {
         Boolean main = false;
 
         for (Func f : p.getFuncs()) {
-            if (f.getId() == "main") {
+            if (f.getId().contains("main")) {
                 main = true; 
 
-                if (f.getParams().getP().size() != 0)
+                if (f.getParams() != null && f.getParams().getP().size() != 0)
                     logError.add( "(" + f.text + ", at position " + f.offset  +") função main não deve possuir argumentos.");
             }
 
@@ -152,7 +152,11 @@ public class TypeCheckVisitor extends Visitor {
         for (Cmd c : f.getCmd())
             c.accept(this);
 
-        if(!retChk){
+        STyFun tf = (STyFun)temp.getFuncType();
+        if (tf.getNumReturns() == 0)
+            retChk = true;
+
+        if (!retChk) {
             logError.add( "(" + f.text + ", at position " + f.offset  +") deve retornar algum valor.");
         }
     }
@@ -418,10 +422,10 @@ public class TypeCheckVisitor extends Visitor {
                             } else {
                                 t = tyerr;
                             }
-                        }else{
+                        } else {
                             t = tyerr;
                         }
-                    }else {
+                    } else {
                         t = tyerr;
                     }
                 }
@@ -457,10 +461,9 @@ public class TypeCheckVisitor extends Visitor {
 
     public void visit(Attr e) {
 
-        if( temp.get(e.getLvalue().getName()) == null && (e.getLvalue().getIdx() == null) ) {
+        if( temp.get(e.getLvalue().getName()) == null && (e.getLvalue().getIdx().size() == 0) ) {
             e.getExp().accept(this);
             temp.set(e.getLvalue().getName(),stk.pop());
-
         } else {
             e.getLvalue().accept(this);
             e.getExp().accept(this);
