@@ -548,10 +548,14 @@ public class TypeCheckVisitor extends Visitor {
                 if (e.getLvalue().length == tf.getNumReturns()) {
                     int numParams = tf.getTypes().length - tf.getNumReturns();
                     for (LValue v : e.getLvalue()) {
-                        v.accept(this);
-                        if(!tf.getTypes()[k + numParams].match(stk.pop())){
-                            logError.add( "(" + v.text + ", at position " + v.offset  +"): " + (k+1) + "\u00BA variavel incompatível com o respectivo retorno de " + e.getId() );
-                        }
+                        if( temp.get(v.getName()) == null && (v.getIdx().size() == 0) ) {
+                            temp.set(v.getName(), tf.getTypes()[k + numParams]);
+                        } else {
+                            v.accept(this);
+                            if(!tf.getTypes()[k + numParams].match(stk.pop())){
+                                logError.add( "(" + v.text + ", at position " + v.offset  +"): " + (k+1) + "\u00BA variavel incompatível com o respectivo retorno de " + e.getId() );
+                            }
+                        }   
                         k++;
                     }
                 } else {
