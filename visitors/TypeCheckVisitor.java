@@ -81,7 +81,7 @@ public class TypeCheckVisitor extends Visitor {
         Boolean main = false;
 
         for (Func f : p.getFuncs()) {
-            if (f.getId().contains("main")) {
+            if (f.getId().equals("main")) {
                 main = true; 
 
                 if (f.getParams() != null && f.getParams().getP().size() != 0)
@@ -342,7 +342,6 @@ public class TypeCheckVisitor extends Visitor {
 
     public void visit(Params e){}
     
-    // TODO
     public void visit(Return e){
         for(Expr ex : e.getReturn()){
             ex.accept(this);
@@ -368,11 +367,14 @@ public class TypeCheckVisitor extends Visitor {
 
         if(stk.pop().match(tybool)){
             retChk = false;
+            e.getCmd().accept(this);
             rt = retChk;
             if(e.getElseCmd() != null){
-               retChk = false;
-               e.getElseCmd().accept(this);
-               re = retChk;
+                retChk = false;
+                e.getElseCmd().accept(this);
+                re = retChk;
+            } else {
+                re = false;
             }
             retChk = rt && re;
         }else{
@@ -413,7 +415,6 @@ public class TypeCheckVisitor extends Visitor {
                        if(t instanceof STyUserType){
                             if (data.containsKey(((STyUserType)t).getName())) {
                                 STyUserType ut = data.get(((STyUserType)t).getName());
-                                
                                 if(ut.getdecls().containsKey(o)) {
                                     t = ut.getdecls().get(o);
                                 } else {
@@ -436,6 +437,7 @@ public class TypeCheckVisitor extends Visitor {
             stk.push(t);
         }else{
             logError.add( "(" + e.text + ", at position " + e.offset  +") Variável não declarada " + e.getName() );
+            stk.push(tyerr);
         }
     }
 
@@ -448,7 +450,7 @@ public class TypeCheckVisitor extends Visitor {
             stk.push(tyerr);
         }
         else if (e.getBrack() > 0) {    
-            stk.push(new STyArr(stk.pop()) );
+            stk.push(new STyArr(t) );
         }
         else {
             stk.push(t);
@@ -480,6 +482,7 @@ public class TypeCheckVisitor extends Visitor {
             stk.push(new STyUserType(e.getName(), data.get(e.getName()).getdecls()));
         } else {
             logError.add("(" + e.text + ", at position " + e.offset  +") Definição do tipo  " + e.getName() + "não encontrada");
+            stk.push(tyerr);
         }
     }
 
@@ -501,7 +504,14 @@ public class TypeCheckVisitor extends Visitor {
         LocalEnv<SType> le = env.get(e.getId());
         if (le != null) {
             STyFun tf = (STyFun)le.getFuncType();
-            if(e.getParams().length == tf.getTypes().length - tf.getNumReturns()) {     
+
+            int numParams;
+            if (e.getParams() != null)
+                numParams = e.getParams().length;
+            else
+                numParams = 0;
+
+            if(numParams == tf.getTypes().length - tf.getNumReturns()) {     
                 int k = 0;
                 boolean r = true;
                 for(Expr x: e.getParams() ){
@@ -534,7 +544,14 @@ public class TypeCheckVisitor extends Visitor {
         LocalEnv<SType> le = env.get(e.getId());
         if (le != null) {
             STyFun tf = (STyFun)le.getFuncType();
-            if(e.getParams().length == tf.getTypes().length - tf.getNumReturns()) {     
+
+            int numParams;
+            if (e.getParams() != null)
+                numParams = e.getParams().length;
+            else
+                numParams = 0;
+
+            if(numParams == tf.getTypes().length - tf.getNumReturns()) {     
                 int k = 0;
                 boolean r = true;
                 for(Expr x: e.getParams() ){
@@ -545,21 +562,24 @@ public class TypeCheckVisitor extends Visitor {
                     k++;
                 }
                 k = 0;
-                if (e.getLvalue().length == tf.getNumReturns()) {
-                    int numParams = tf.getTypes().length - tf.getNumReturns();
-                    for (LValue v : e.getLvalue()) {
-                        if( temp.get(v.getName()) == null && (v.getIdx().size() == 0) ) {
-                            temp.set(v.getName(), tf.getTypes()[k + numParams]);
-                        } else {
-                            v.accept(this);
-                            if(!tf.getTypes()[k + numParams].match(stk.pop())){
-                                logError.add( "(" + v.text + ", at position " + v.offset  +"): " + (k+1) + "\u00BA variavel incompatível com o respectivo retorno de " + e.getId() );
-                            }
-                        }   
-                        k++;
+
+                if (e.getLvalue() != null) {
+                    if (e.getLvalue().length == tf.getNumReturns()) {
+                        numParams = tf.getTypes().length - tf.getNumReturns();
+                        for (LValue v : e.getLvalue()) {
+                            if( temp.get(v.getName()) == null && (v.getIdx().size() == 0) ) {
+                                temp.set(v.getName(), tf.getTypes()[k + numParams]);
+                            } else {
+                                v.accept(this);
+                                if(!tf.getTypes()[k + numParams].match(stk.pop())){
+                                    logError.add( "(" + v.text + ", at position " + v.offset  +"): " + (k+1) + "\u00BA variavel incompatível com o respectivo retorno de " + e.getId() );
+                                }
+                            }   
+                            k++;
+                        }
+                    } else {
+                        logError.add("(" + e.text + ", at position " + e.offset  +") Chamada da função " + e.getId() + " tem número de retornos invalido" );
                     }
-                } else {
-                    logError.add("(" + e.text + ", at position " + e.offset  +") Chamada da função " + e.getId() + " tem número de retornos invalido" );
                 }
                 
             } else {

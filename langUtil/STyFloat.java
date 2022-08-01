@@ -16,7 +16,7 @@ public class STyFloat extends SType {
      }
      
      public boolean match(SType v){
-          return (v instanceof STyErr) || (v instanceof STyInt) || (v instanceof STyGeneric);
+          return (v instanceof STyErr) || (v instanceof STyFloat) || (v instanceof STyGeneric);
      }
      
      public String toString(){
